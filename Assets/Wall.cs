@@ -2,12 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : Boundary
+public class Wall : MonoBehaviour
 {
-    public Door(Room room)
-    {
-
-    }
     // Start is called before the first frame update
     void Start()
     {

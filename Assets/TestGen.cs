@@ -22,13 +22,13 @@ public class TestGen : MonoBehaviour
 
             if (x == 0)
             {
-                newcolor = new Color(100, 100, 100, 100);
+                newcolor = new Color32(100, 100, 100, 100);
 
                 sprite.color = newcolor;
             }
             else if (x == 1)
             {
-                newcolor = new Color(250, 7, 74, 100);
+                newcolor = new Color32(250, 7, 74, 100);
 
                 sprite.color = newcolor;
             }
