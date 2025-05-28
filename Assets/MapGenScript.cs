@@ -41,17 +41,7 @@ public class MapGenScript : MonoBehaviour
 
         drawRoom(colorList);
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < roomMap.GetLength(1); i++)
-        {
-            for (int j = 0; j < roomMap.GetLength(0); j++)
-            {
-                sb.Append(roomMap[i, j]);
-                sb.Append(' ');
-            }
-            sb.AppendLine();
-        }
-        Debug.Log(sb.ToString());
+        print2DIntArray(roomMap);
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -105,23 +95,40 @@ public class MapGenScript : MonoBehaviour
                 }
             }
         }
+        print2DIntArray(roomMap);
+    }
+
+    public void print2DIntArray(int[,] arr)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < roomMap.GetLength(1); i++)
+        {
+            for (int j = 0; j < roomMap.GetLength(0); j++)
+            {
+                sb.Append(roomMap[i, j]);
+                sb.Append(' ');
+            }
+            sb.AppendLine();
+        }
+        Debug.Log(sb.ToString());
     }
 
     // actually puts all the rooms on screen using the color list for the colors and the numbers from the roomMap to determine what colors they are
     private void drawRoom(Color32[] colorList)
     {
-        for (int x = 0; x < MAP_WIDTH; x++)
+        for (int x = 0; x < MAP_HEIGHT ; x++)
         {
-            for (int y = 0; y < MAP_HEIGHT; y++)
+            for (int y = 0; y < MAP_WIDTH; y++)
             {
-                Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, y * Room.ROOM_UNIT);
+                Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - y) * Room.ROOM_UNIT);
 
                 roomPrefab.name = roomMap[x, y].ToString();
 
+                SpriteRenderer sprite = roomPrefab.GetComponent<SpriteRenderer>();
+                sprite.color = colorList[roomMap[x, y] - 1];
+
                 Instantiate(roomPrefab, roomPos, Quaternion.identity);
 
-                SpriteRenderer sprite = roomPrefab.GetComponent<SpriteRenderer>();
-                sprite.color = colorList[roomMap[x, y]];
 
                 Room room = new Room(roomPrefab, roomPos);
             }
