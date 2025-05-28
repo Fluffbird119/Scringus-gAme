@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+//using System;
 
 
 public class Room : Object
@@ -16,6 +17,8 @@ public class Room : Object
 
     private Vector2 pos;
 
+    private MapGenScript mapGen;
+
     public Room(GameObject prefab, Vector2 pos)
     {
         this.prefab = prefab;
@@ -26,5 +29,7 @@ public class Room : Object
         roomHeight = rend.bounds.size.y/ ROOM_UNIT;
 
         this.pos = pos;
+
+        //this.prefab.name = "Room " + mapGen.roomMap[(int)Math.Round(pos.x/ROOM_UNIT), (int)Math.Round(pos.y/ROOM_UNIT)].ToString();
     }
 }

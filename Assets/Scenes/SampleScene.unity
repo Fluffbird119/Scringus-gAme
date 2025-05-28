@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomPrefab: {fileID: 6876106479762387085, guid: a2e9b66cfa1487a4aab053fd1c076697, type: 3}
   doorPrefab: {fileID: 6876106479762387085, guid: a2e9b66cfa1487a4aab053fd1c076697, type: 3}
+  seed: -284568568
 --- !u!4 &862120568
 Transform:
   m_ObjectHideFlags: 0
@@ -269,7 +270,7 @@ Transform:
   m_GameObject: {fileID: 1465969662}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 25, y: 25, z: -60}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
