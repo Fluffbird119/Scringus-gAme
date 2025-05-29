@@ -152,9 +152,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a2bde2a798a7c4999aa2a3868970f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomPrefab: {fileID: 6876106479762387085, guid: a2e9b66cfa1487a4aab053fd1c076697, type: 3}
   doorPrefab: {fileID: 6876106479762387085, guid: a2e9b66cfa1487a4aab053fd1c076697, type: 3}
-  seed: -284568568
+  roomPrefab: {fileID: 6876106479762387085, guid: a2e9b66cfa1487a4aab053fd1c076697, type: 3}
+  wallPrefab: {fileID: 4791214012642207557, guid: a30bee15ab8f0c7489fb3bbbdc16caae, type: 3}
+  seed: 0
 --- !u!4 &862120568
 Transform:
   m_ObjectHideFlags: 0
@@ -270,8 +271,8 @@ Transform:
   m_GameObject: {fileID: 1465969662}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25, y: 25, z: -60}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalScale: {x: 0.25, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

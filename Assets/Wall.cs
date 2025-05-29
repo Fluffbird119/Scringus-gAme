@@ -2,17 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : MonoBehaviour
+public class Wall : Object
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private float roomWidth;
+    private float roomHeight;
 
-    // Update is called once per frame
-    void Update()
+
+    private GameObject prefab;
+    private Renderer rend;
+
+    private Vector2 pos;
+
+    private MapGenScript mapGen;
+
+    public Wall(GameObject prefab, Vector2 pos)
     {
-        
+        this.prefab = prefab;
+
+        rend = prefab.GetComponent<Renderer>();
+
+        roomWidth = rend.bounds.size.x / Room.ROOM_UNIT;
+        roomHeight = rend.bounds.size.y / Room.ROOM_UNIT;
+
+        this.pos = pos;
+
     }
 }
