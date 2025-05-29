@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
+using System.Linq;
 
 public class MapGenScript : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class MapGenScript : MonoBehaviour
         drawRoom(colorList);
 
         generateWalls();
+        generateDoors();
 
         printWallMap();
     }
@@ -173,7 +175,7 @@ public class MapGenScript : MonoBehaviour
     /**
     * orientation is true for vertical, false for horizontal
     **/
-    private void generateWall(float x, float y, bool orientation ,string name)
+    private void generateWall(float x, float y, bool orientation, string name)
     {
         Vector2 wallPos = new Vector2(x, y);
 
@@ -208,12 +210,39 @@ public class MapGenScript : MonoBehaviour
 
     public void generateDoors()
     {
+        Vector2[] keyArray = wallMap.Keys.ToArray();
+        for (int i = 0; i < keyArray.Length; i++)
+        {
+            float makeDoor = Random.Range(0f, 1f);
+            if (makeDoor < 0.2)
+            {
+                generateDoor(keyArray[i], wallMap[keyArray[i]]);
+            }
+        }
 
     }
 
-    public void generateDoor()
+    public void generateDoor(Vector2 wallPos, GameObject wall)
     {
+        destroyWall(wallPos);
+        Debug.Log("door made");
+        bool orientation = wall.transform.rotation.z == 0;
+        GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
 
+        if (orientation)
+        {
+            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.identity);
+        }
+        else
+        {
+            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
+        }
+
+        string name = "door";
+        newDoor.name = name;
+
+        Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
+        Door door = new Door(newDoor, doorPos);
     }
 
     private void genSeed()

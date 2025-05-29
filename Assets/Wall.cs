@@ -26,4 +26,5 @@ public class Wall : Object
 
         this.pos = pos;
     }
+
 }
