@@ -9,14 +9,17 @@ public class MapGenScript : MonoBehaviour
     public GameObject roomPrefab;
     public GameObject wallPrefab;
 
-    public static readonly int MAP_WIDTH = 10;
-    public static readonly int MAP_HEIGHT = 10;
+    public static readonly int MAP_WIDTH = 7;
+    public static readonly int MAP_HEIGHT = 7;
 
     public static readonly float MERGE_ODDS = 0.25f;
 
     public int[,] roomMap = new int[MAP_WIDTH,MAP_HEIGHT];
 
     public int seed = 0; //set to 0 to generate random seeds
+
+    // dictionaries in C# are silly
+    private Dictionary<Vector2, GameObject> wallMap = new Dictionary<Vector2, GameObject>();
 
     void Start()
     {
@@ -29,6 +32,8 @@ public class MapGenScript : MonoBehaviour
         drawRoom(colorList);
 
         generateWalls();
+
+        printWallMap();
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -107,17 +112,17 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_WIDTH; y++)
             {
+                GameObject newRoom; // just learned this is a thing you can do where you assign the clone to a new GameObject and then alter that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
                 Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
 
-                roomPrefab.name = roomMap[x, y].ToString();
+                newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
 
-                SpriteRenderer sprite = roomPrefab.GetComponent<SpriteRenderer>();
+                newRoom.name = roomMap[x, y].ToString();
+
+                SpriteRenderer sprite = newRoom.GetComponent<SpriteRenderer>();
                 sprite.color = colorList[roomMap[x, y] - 1];
 
-                Instantiate(roomPrefab, roomPos, Quaternion.identity);
-
-
-                Room room = new Room(roomPrefab, roomPos);
+                Room room = new Room(newRoom, roomPos);
             }
         }
     }
@@ -128,34 +133,76 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
+                // left boundary wall
                 if (x == 0)
                 {
-                    generateWall(Room.ROOM_UNIT * -0.5f, y * Room.ROOM_UNIT, true);
+                    generateWall(Room.ROOM_UNIT * -0.5f, y * Room.ROOM_UNIT, true, "Left Boundary at y = " + y.ToString());
                 } 
 
+                // right boundary wall
                 if (x == MAP_WIDTH - 1)
                 {
-                    generateWall(Room.ROOM_UNIT * (MAP_WIDTH -0.5f), y * Room.ROOM_UNIT, true);
+                    generateWall(Room.ROOM_UNIT * (MAP_WIDTH -0.5f), y * Room.ROOM_UNIT, true, "Right Boundary at y = " + y.ToString());
 
                 }
+                // horizontal walls between rooms
                 else if (roomMap[x, y] != roomMap[x + 1, y])
                 {
-                    generateWall((x + 0.5f) * Room.ROOM_UNIT, (MAP_HEIGHT - y - 1) * Room.ROOM_UNIT, true);
+                    generateWall((x + 0.5f) * Room.ROOM_UNIT, (MAP_HEIGHT - y - 1) * Room.ROOM_UNIT, true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")");
                 }
 
+                // top boundary wall
                 if (y == MAP_HEIGHT - 1)
                 {
-                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT - 0.5f), false);
+                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT - 0.5f), false, "Top Boundary at x = " + x.ToString());
                 }
+                // bottom boundary wall
                 if (y == 0)
                 {
-                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * -0.5f, false);
+                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * -0.5f, false, "Bot Boundary at x = " + x.ToString());
                 } 
+                // vertical walls between rooms
                  else if (roomMap[x,y] != roomMap[x,y - 1])
                 {
-                    generateWall((x) * Room.ROOM_UNIT, ((MAP_HEIGHT - y - 1) + 0.5f) * Room.ROOM_UNIT, false);
+                    generateWall((x) * Room.ROOM_UNIT, ((MAP_HEIGHT - y - 1) + 0.5f) * Room.ROOM_UNIT, false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")");
                 }
             }
+        }
+    }
+
+    /**
+    * orientation is true for vertical, false for horizontal
+    **/
+    private void generateWall(float x, float y, bool orientation ,string name)
+    {
+        Vector2 wallPos = new Vector2(x, y);
+
+        GameObject newWall; // instead of continually editiing one prefab instead just make a clone in this loop and use that
+
+        if (orientation)
+        {
+            newWall = Instantiate(wallPrefab, wallPos, Quaternion.identity);
+        }
+        else
+        {
+            newWall = Instantiate(wallPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
+        }
+
+        newWall.name = name;
+
+        wallMap[wallPos] = newWall; // saving the newWall data into out dictionary so we can pick some from it later to delete
+
+        Wall wall = new Wall(newWall, wallPos);
+    }
+
+    // destroys the wall at the Vector2 position given to it
+    public void destroyWall(Vector2 wallPos)  // this doesnt actually need the Vector2 wallPos defined in generateWall it just needs any cords in the form of a Vector2 !For example the cords of a soon to be door can be passed into here to remove the wall that would be blocking it!
+    {
+        // checks the dictionary at the pos passed in and grabs the wall gameobject that was stored there in generateWall to delete
+        if (wallMap.TryGetValue(wallPos, out GameObject wall))
+        {
+            Destroy(wall);
+            wallMap.Remove(wallPos);
         }
     }
 
@@ -167,27 +214,6 @@ public class MapGenScript : MonoBehaviour
     public void generateDoor()
     {
 
-    }
-
-    /**
-     * orientation is true for vertical, false for horizontal
-     **/
-    private void generateWall(float x, float y, bool orientation)
-    {
-        Vector2 wallPos = new Vector2(x, y);
-
-        if (orientation)
-        {
-            Instantiate(wallPrefab, wallPos, Quaternion.identity);
-        }
-        else
-        {
-            Instantiate(wallPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
-
-        }
-
-
-        Wall wall = new Wall(wallPrefab, wallPos);
     }
 
     private void genSeed()
@@ -206,6 +232,15 @@ public class MapGenScript : MonoBehaviour
             Random.InitState(seed);
 
             Debug.Log("Seed Is: " + seed);
+        }
+    }
+
+    private void printWallMap()
+    {
+        // thanks reddit
+        foreach (var i in wallMap)
+        {
+            Debug.Log($"Key: {i.Key}, Value: {i.Value}");
         }
     }
 }

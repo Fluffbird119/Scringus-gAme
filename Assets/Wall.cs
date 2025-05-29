@@ -25,6 +25,5 @@ public class Wall : Object
         roomHeight = rend.bounds.size.y / Room.ROOM_UNIT;
 
         this.pos = pos;
-
     }
 }
