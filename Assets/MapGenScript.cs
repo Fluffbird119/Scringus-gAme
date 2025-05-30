@@ -35,7 +35,7 @@ public class MapGenScript : MonoBehaviour
         generateWalls();
         generateDoors();
 
-        printWallMap();
+        //printWallMap();
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -77,8 +77,6 @@ public class MapGenScript : MonoBehaviour
             {
                 float right = Random.Range(0f, 1f);
                 float down = Random.Range(0f, 1f);
-                //Debug.Log(down);
-                //Debug.Log(right);
                 if (right < MERGE_ODDS && x != MAP_WIDTH - 1)
                 {
                     roomMap[x + 1, y] = roomMap[x, y];
@@ -124,7 +122,7 @@ public class MapGenScript : MonoBehaviour
                 SpriteRenderer sprite = newRoom.GetComponent<SpriteRenderer>();
                 sprite.color = colorList[roomMap[x, y] - 1];
 
-                Room room = new Room(newRoom, roomPos);
+                Room room = new Room(newRoom, roomPos, roomMap[x, y]);
             }
         }
     }
@@ -213,8 +211,11 @@ public class MapGenScript : MonoBehaviour
         Vector2[] keyArray = wallMap.Keys.ToArray();
         for (int i = 0; i < keyArray.Length; i++)
         {
+            Vector2 pos = keyArray[i];
             float makeDoor = Random.Range(0f, 1f);
-            if (makeDoor < 0.2)
+            if (makeDoor < 0.2 
+                && pos.x != -.5f * Room.ROOM_UNIT && pos.x != MAP_WIDTH * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT
+                && pos.y != -.5f * Room.ROOM_UNIT && pos.y != MAP_HEIGHT * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT)
             {
                 generateDoor(keyArray[i], wallMap[keyArray[i]]);
             }
@@ -225,7 +226,6 @@ public class MapGenScript : MonoBehaviour
     public void generateDoor(Vector2 wallPos, GameObject wall)
     {
         destroyWall(wallPos);
-        Debug.Log("door made");
         bool orientation = wall.transform.rotation.z == 0;
         GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
 

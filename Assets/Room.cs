@@ -14,21 +14,20 @@ public class Room : Object
 
     private GameObject prefab;
     private Renderer rend;
-
+    private int roomValue;
     private Vector2 pos;
 
-    private MapGenScript mapGen;
-
-    public Room(GameObject prefab, Vector2 pos)
+    private MapGenScript mapGenScript;
+    public Room(GameObject prefab, Vector2 pos, int roomValue)
     {
         this.prefab = prefab;
+        this.roomValue = roomValue;
+        this.pos = pos;
 
         rend = prefab.GetComponent<Renderer>();
 
         roomWidth = rend.bounds.size.x / ROOM_UNIT;
         roomHeight = rend.bounds.size.y/ ROOM_UNIT;
-
-        this.pos = pos;
 
         //this.prefab.name = "Room " + mapGen.roomMap[(int)Math.Round(pos.x/ROOM_UNIT), (int)Math.Round(pos.y/ROOM_UNIT)].ToString();
     }
