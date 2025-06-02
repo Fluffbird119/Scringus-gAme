@@ -23,7 +23,7 @@ public class MapGenScript : MonoBehaviour
     public int seed = 0; //set to 0 to generate random seeds
 
     // dictionaries in C# are silly
-    private Dictionary<Vector2, GameObject> wallMap = new Dictionary<Vector2, GameObject>();
+    private Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); //altered to <Vector2, Wall>
 
     void Start()
     {
@@ -147,35 +147,41 @@ public class MapGenScript : MonoBehaviour
                 // left boundary wall
                 if (x == 0)
                 {
-                    generateWall(Room.ROOM_UNIT * -0.5f, y * Room.ROOM_UNIT, true, "Left Boundary at y = " + y.ToString());
+                    generateWall(Room.ROOM_UNIT * -0.5f, y * Room.ROOM_UNIT, null, rooms[y, 0], 
+                                 true, "Left Boundary at y = " + y.ToString());
                 } 
 
                 // right boundary wall
                 if (x == MAP_WIDTH - 1)
                 {
-                    generateWall(Room.ROOM_UNIT * (MAP_WIDTH -0.5f), y * Room.ROOM_UNIT, true, "Right Boundary at y = " + y.ToString());
+                    generateWall(Room.ROOM_UNIT * (MAP_WIDTH -0.5f), y * Room.ROOM_UNIT, rooms[y, MAP_WIDTH - 1], null,
+                                 true, "Right Boundary at y = " + y.ToString());
 
                 }
-                // horizontal walls between rooms
+                // vertical walls between rooms
                 else if (roomMap[y, x] != roomMap[y, x + 1])
                 {
-                    generateWall((x + 0.5f) * Room.ROOM_UNIT, (MAP_HEIGHT - y - 1) * Room.ROOM_UNIT, true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")");
+                    generateWall((x + 0.5f) * Room.ROOM_UNIT, (MAP_HEIGHT - y - 1) * Room.ROOM_UNIT, rooms[y, x], rooms[y, x + 1], 
+                                 true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")");
                 }
 
                 // top boundary wall
                 if (y == MAP_HEIGHT - 1)
                 {
-                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT - 0.5f), false, "Top Boundary at x = " + x.ToString());
+                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT - 0.5f), null, rooms[MAP_HEIGHT - 1, x],
+                                 false, "Top Boundary at x = " + x.ToString());
                 }
                 // bottom boundary wall
                 if (y == 0)
                 {
-                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * -0.5f, false, "Bot Boundary at x = " + x.ToString());
+                    generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * -0.5f, rooms[0, x], null,
+                                 false, "Bot Boundary at x = " + x.ToString());
                 } 
-                // vertical walls between rooms
+                // horizontal walls between rooms
                  else if (roomMap[y, x] != roomMap[y - 1, x])
                 {
-                    generateWall((x) * Room.ROOM_UNIT, ((MAP_HEIGHT - y - 1) + 0.5f) * Room.ROOM_UNIT, false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")");
+                    generateWall((x) * Room.ROOM_UNIT, ((MAP_HEIGHT - y - 1) + 0.5f) * Room.ROOM_UNIT, rooms[y, x], rooms[y - 1, x],
+                                 false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")");
                 }
             }
         }
@@ -184,7 +190,7 @@ public class MapGenScript : MonoBehaviour
     /**
     * orientation is true for vertical, false for horizontal
     **/
-    private void generateWall(float x, float y, bool orientation, string name)
+    private void generateWall(float x, float y, Room room1, Room room2, bool orientation, string name)
     {
         Vector2 wallPos = new Vector2(x, y);
 
@@ -200,17 +206,16 @@ public class MapGenScript : MonoBehaviour
         }
 
         newWall.name = name;
+        Wall wall = new Wall(newWall, wallPos, room1, room2); //creates wall object
 
-        wallMap[wallPos] = newWall; // saving the newWall data into out dictionary so we can pick some from it later to delete
-
-        Wall wall = new Wall(newWall, wallPos);
+        wallMap[wallPos] = wall; // saving the newWall data into out dictionary so we can pick some from it later to delete
     }
 
     // destroys the wall at the Vector2 position given to it
     public void destroyWall(Vector2 wallPos)  // this doesnt actually need the Vector2 wallPos defined in generateWall it just needs any cords in the form of a Vector2 !For example the cords of a soon to be door can be passed into here to remove the wall that would be blocking it!
     {
         // checks the dictionary at the pos passed in and grabs the wall gameobject that was stored there in generateWall to delete
-        if (wallMap.TryGetValue(wallPos, out GameObject wall))
+        if (wallMap.TryGetValue(wallPos, out Wall wall))
         {
             Destroy(wall);
             wallMap.Remove(wallPos);
@@ -234,10 +239,10 @@ public class MapGenScript : MonoBehaviour
 
     }
 
-    public void generateDoor(Vector2 wallPos, GameObject wall)
+    public void generateDoor(Vector2 wallPos, Wall wall)
     {
         destroyWall(wallPos);
-        bool orientation = wall.transform.rotation.z == 0;
+        bool orientation = wall.getGameObject().transform.rotation.z == 0;
         GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
 
         if (orientation)
@@ -253,7 +258,7 @@ public class MapGenScript : MonoBehaviour
         newDoor.name = name;
 
         Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
-        Door door = new Door(newDoor, doorPos, wall.getRoom1();
+        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2()); //FIX
     }
 
     private void genSeed()
@@ -298,7 +303,7 @@ public class MapGenScript : MonoBehaviour
         // thanks reddit
         foreach (var i in wallMap)
         {
-            Debug.Log($"Key: {i.Key}, Value: {i.Value}");
+            Debug.Log($"Key: {i.Key}, Value: {i.Value}"); //Cu is going to alter wallmap to be a disct<pos,Boundary>
         }
     }
 }
