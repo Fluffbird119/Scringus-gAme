@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Door : Object
+public class Door : Boundary
 {
 
 
@@ -17,7 +18,7 @@ public class Door : Object
     private Vector2 pos;
 
     private MapGenScript mapGen;
-    public Door(GameObject prefab, Vector2 pos)
+    public Door(GameObject prefab, Vector2 pos, Room room1, Room room2) : base(room1, room2)
     {
         this.prefab = prefab;
 

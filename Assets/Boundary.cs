@@ -2,17 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boundary : MonoBehaviour
+public class Boundary : Object
 {
-    // Start is called before the first frame update
-    void Start()
+    Room room1;
+    Room room2;
+
+    public Boundary(Room room1, Room room2)
     {
-        
+        this.room1 = room1;
+        this.room2 = room2;
     }
 
-    // Update is called once per frame
-    void Update()
+    public Room getRoom1()
     {
-        
+        return this.room1;
+    }
+
+    public Room getRoom2()
+    {
+        return this.room2;
     }
 }

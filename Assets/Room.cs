@@ -27,8 +27,13 @@ public class Room : Object
         rend = prefab.GetComponent<Renderer>();
 
         roomWidth = rend.bounds.size.x / ROOM_UNIT;
-        roomHeight = rend.bounds.size.y/ ROOM_UNIT;
+        roomHeight = rend.bounds.size.y / ROOM_UNIT;
 
         //this.prefab.name = "Room " + mapGen.roomMap[(int)Math.Round(pos.x/ROOM_UNIT), (int)Math.Round(pos.y/ROOM_UNIT)].ToString();
+    }
+
+    public Vector2 getPos()
+    {
+        return pos;
     }
 }

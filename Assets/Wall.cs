@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : Object
+public class Wall : Boundary
 {
     private float roomWidth;
     private float roomHeight;
@@ -15,7 +15,7 @@ public class Wall : Object
 
     private MapGenScript mapGen;
 
-    public Wall(GameObject prefab, Vector2 pos)
+    public Wall(GameObject prefab, Vector2 pos, Room room1, Room room2) : base(room1, room2)
     {
         this.prefab = prefab;
 

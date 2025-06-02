@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using System.Linq;
+using UnityEngine.UIElements;
 
 public class MapGenScript : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class MapGenScript : MonoBehaviour
 
     public int[,] roomMap = new int[MAP_WIDTH,MAP_HEIGHT];
 
+    public Room[,] rooms = new Room[MAP_WIDTH,MAP_HEIGHT];
+
     public int seed = 0; //set to 0 to generate random seeds
 
     // dictionaries in C# are silly
@@ -30,7 +33,7 @@ public class MapGenScript : MonoBehaviour
 
         Color32[] colorList = initializeColorArray();
 
-        drawRoom(colorList);
+        drawRooms(colorList);
 
         generateWalls();
         generateDoors();
@@ -65,7 +68,7 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
-                roomMap[x, y] = roomNumber;
+                roomMap[y, x] = roomNumber;
                 roomNumber++;
             }
         }
@@ -75,15 +78,15 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
-                float right = Random.Range(0f, 1f);
                 float down = Random.Range(0f, 1f);
-                if (right < MERGE_ODDS && x != MAP_WIDTH - 1)
-                {
-                    roomMap[x + 1, y] = roomMap[x, y];
-                }
+                float right = Random.Range(0f, 1f);
                 if (down < MERGE_ODDS && y != MAP_HEIGHT - 1)
                 {
-                    roomMap[x, y + 1] = roomMap[x, y];
+                    roomMap[y + 1, x] = roomMap[y, x];
+                }
+                if (right < MERGE_ODDS && x != MAP_WIDTH - 1)
+                {
+                    roomMap[y, x + 1] = roomMap[y, x];
                 }
             }
         }
@@ -93,11 +96,11 @@ public class MapGenScript : MonoBehaviour
     public void print2DIntArray(int[,] arr)
     {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < roomMap.GetLength(1); i++)
+        for (int i = 0; i < roomMap.GetLength(0); i++)
         {
-            for (int j = 0; j < roomMap.GetLength(0); j++)
+            for (int j = 0; j < roomMap.GetLength(1); j++)
             {
-                sb.Append(roomMap[i, j]);
+                sb.Append(roomMap[j, i]);
                 sb.Append(' ');
             }
             sb.AppendLine();
@@ -106,25 +109,33 @@ public class MapGenScript : MonoBehaviour
     }
 
     // actually puts all the rooms on screen using the color list for the colors and the numbers from the roomMap to determine what colors they are
-    private void drawRoom(Color32[] colorList)
+    private void drawRooms(Color32[] colorList)
     {
-        for (int x = 0; x < MAP_HEIGHT ; x++)
+        //draws each room based on room map
+        for (int y = 0; y < MAP_HEIGHT ; y++)
         {
-            for (int y = 0; y < MAP_WIDTH; y++)
+            for (int x = 0; x < MAP_WIDTH; x++)
             {
-                GameObject newRoom; // just learned this is a thing you can do where you assign the clone to a new GameObject and then alter that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
-                Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
-
-                newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
-
-                newRoom.name = roomMap[x, y].ToString();
-
-                SpriteRenderer sprite = newRoom.GetComponent<SpriteRenderer>();
-                sprite.color = colorList[roomMap[x, y] - 1];
-
-                Room room = new Room(newRoom, roomPos, roomMap[x, y]);
+                drawRoom(y, x, colorList);
             }
         }
+
+        //draws a starter room
+    }
+
+    private void drawRoom(int x, int y, Color32[] colorList)
+    {
+        GameObject newRoom; // just learned this is a thing you can do where you assign the clone to a new GameObject and then alter that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
+        Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
+
+        newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
+
+        newRoom.name = roomMap[x, y].ToString();
+
+        SpriteRenderer sprite = newRoom.GetComponent<SpriteRenderer>();
+        sprite.color = colorList[roomMap[y, x] - 1];
+
+        Room room = new Room(newRoom, roomPos, roomMap[y, x]);
     }
 
     private void generateWalls()
@@ -146,7 +157,7 @@ public class MapGenScript : MonoBehaviour
 
                 }
                 // horizontal walls between rooms
-                else if (roomMap[x, y] != roomMap[x + 1, y])
+                else if (roomMap[y, x] != roomMap[y, x + 1])
                 {
                     generateWall((x + 0.5f) * Room.ROOM_UNIT, (MAP_HEIGHT - y - 1) * Room.ROOM_UNIT, true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")");
                 }
@@ -162,7 +173,7 @@ public class MapGenScript : MonoBehaviour
                     generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * -0.5f, false, "Bot Boundary at x = " + x.ToString());
                 } 
                 // vertical walls between rooms
-                 else if (roomMap[x,y] != roomMap[x,y - 1])
+                 else if (roomMap[y, x] != roomMap[y - 1, x])
                 {
                     generateWall((x) * Room.ROOM_UNIT, ((MAP_HEIGHT - y - 1) + 0.5f) * Room.ROOM_UNIT, false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")");
                 }
@@ -242,7 +253,7 @@ public class MapGenScript : MonoBehaviour
         newDoor.name = name;
 
         Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
-        Door door = new Door(newDoor, doorPos);
+        Door door = new Door(newDoor, doorPos, wall.getRoom1();
     }
 
     private void genSeed()
@@ -263,7 +274,25 @@ public class MapGenScript : MonoBehaviour
             Debug.Log("Seed Is: " + seed);
         }
     }
+    /*
+    public bool roomHasPathToStart(Room currRoom, Room start)
+    {
+        Dictionary<Room, KeyValuePair<int, Room>> parents = new Dictionary<Room, KeyValuePair<int, Room>>();
+        bool[,] visitedRooms = new bool[MAP_WIDTH, MAP_HEIGHT];
+        Queue<KeyValuePair<int, Room>> queue = new Queue<KeyValuePair<int, Room>>();
+        KeyValuePair<int, Room> startPair = new KeyValuePair<int, Room>(0, currRoom);
+        queue.Enqueue(startPair);
+        KeyValuePair<int, Room> nullPair = new KeyValuePair<int, Room>(-1, null);
+        parents.Add(start, nullPair);
 
+        while(queue.Count > 0)
+        {
+            KeyValuePair<int, Room> currPair = queue.Dequeue();
+
+            visitedRooms[currPair.Value.getPos().y, currPair.Value.getPos().x] = currPair;
+        }
+    }
+    */
     private void printWallMap()
     {
         // thanks reddit
