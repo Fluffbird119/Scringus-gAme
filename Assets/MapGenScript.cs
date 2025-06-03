@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
+using System;
 
 public class MapGenScript : MonoBehaviour
 {
@@ -34,7 +36,8 @@ public class MapGenScript : MonoBehaviour
         generateWalls();
         generateDoors();
 
-        
+        collectionOfDebugWhathaveyou();
+
         //printWallMap();
     }
 
@@ -137,7 +140,8 @@ public class MapGenScript : MonoBehaviour
         newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
         rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
         newRoom.name = roomMap[y, x].ToString();
-        rooms[y, x].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
+        EnclosedArea enclosedArea = new EnclosedArea(rooms[y, x]);
+        rooms[y, x].setEnclosedArea(enclosedArea); //creates an enclosed area for every room (they will be merged)
         SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
         sprite.color = col;
             
@@ -289,25 +293,79 @@ public class MapGenScript : MonoBehaviour
             Debug.Log("Seed Is: " + seed);
         }
     }
-    /*
-    public bool roomHasPathToStart(Room currRoom, Room start)
+    //takes any 2 rooms and sees if they are connected by some path
+    public bool areRoomsConnected(Room roomA, Room roomB)
     {
-        Dictionary<Room, KeyValuePair<int, Room>> parents = new Dictionary<Room, KeyValuePair<int, Room>>();
-        bool[,] visitedRooms = new bool[MAP_WIDTH, MAP_HEIGHT];
-        Queue<KeyValuePair<int, Room>> queue = new Queue<KeyValuePair<int, Room>>();
-        KeyValuePair<int, Room> startPair = new KeyValuePair<int, Room>(0, currRoom);
-        queue.Enqueue(startPair);
-        KeyValuePair<int, Room> nullPair = new KeyValuePair<int, Room>(-1, null);
-        parents.Add(start, nullPair);
-
-        while(queue.Count > 0)
+        spanningTree(roomA); //changes all 'known' and 'previousArea' values to reflect paths from roomA
+        return roomB.getEnclosedArea().isKnown();
+        //Enclosed areas currently have no toString method or really any designation, but this 'spanningTree can very easily generate the path backwards
+    }
+    private void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
+    {
+        foreach(Room room in rooms)
         {
-            KeyValuePair<int, Room> currPair = queue.Dequeue();
+            room.getEnclosedArea().clearVertexInfo(); //this wipes the vertex info for everything immediately
+        }
+        EnclosedArea initEncArea = initRoom.getEnclosedArea();
+        //List<EnclosedArea> foundEnclosedAreas = new List<EnclosedArea>(); //this list tells me which enclosed areas I have seen
+        Queue<EnclosedArea> queue = new Queue<EnclosedArea>();
+        queue.Enqueue(initEncArea);
+        while (queue.Count > 0)
+        {
+            EnclosedArea currentEncArea = queue.Dequeue();
+            currentEncArea.makeKnown();
+            foreach(Boundary edge in currentEncArea.getTravBoundList())
+            {
+                EnclosedArea debugOption1 = edge.getRoom1().getEnclosedArea(); //the next several lines literally just choose the side of the boundary
+                EnclosedArea debugOption2 = edge.getRoom2().getEnclosedArea(); //that isn't the currrentEncArea, but due to a whole lot of debugging, 
+                EnclosedArea neighbour = null;                                 //I ultimately deleted the fn that did this and left the debug that works here.
+                if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption1))//I'll prolly optimise it at some point if needed -[Cu]
+                {
+                    neighbour = debugOption2;
+                }
+                else if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption2))
+                {
+                    neighbour = debugOption1;
+                }                                                              //this is the last line of the debug that I should prolly alter.
 
-            visitedRooms[currPair.Value.getPos().y, currPair.Value.getPos().x] = currPair;
+                if (neighbour.isKnown() == false)
+                {
+                    if(neighbour.previousArea() == null)
+                    {
+                        neighbour.setPreviousArea(currentEncArea);
+                        queue.Enqueue(neighbour);
+                    }
+                }
+            }
         }
     }
-    */
+
+    private void collectionOfDebugWhathaveyou()
+    {
+        int initX = MAP_WIDTH/2;
+        int initY = MAP_HEIGHT/2;
+        Debug.Log(areRoomsConnected(rooms[initY, initX], rooms[0, 0]) + " what");
+        for (int currY = 0; currY < MAP_HEIGHT; currY++)
+        {
+            for (int currX = 0; currX < MAP_WIDTH; currX++)
+            {
+                //Debug.Log("is room[" + initY + ", " + initX + "] and room[" + currY + ", " + currX + "] conected:" + 
+                //                  areRoomsConnected(rooms[initY, initX], rooms[currY, currX]));
+                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
+                //EnclosedArea EA = new EnclosedArea(rooms[currY, currX]);
+
+                //rooms[currY, currX].setEnclosedArea(EA);
+                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
+                Debug.Log("plus, room at ["+currY+", "+currX+"]: "+ rooms[currY, currX].getEnclosedArea().isKnown());
+            }
+        }
+        
+
+
+    }
+
+
+
     private void printWallMap()
     {
         // thanks reddit
