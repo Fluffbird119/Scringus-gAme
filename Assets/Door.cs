@@ -22,7 +22,8 @@ public class Door : Boundary
         {
             doorWidth = topRend.bounds.size.x / Room.ROOM_UNIT;
             doorHeight = (topRend.bounds.size.y + botRend.bounds.size.y) / Room.ROOM_UNIT;
-        } else
+        }
+        else
         {
             doorWidth = (topRend.bounds.size.x + botRend.bounds.size.x) / Room.ROOM_UNIT;
             doorHeight = topRend.bounds.size.y / Room.ROOM_UNIT;

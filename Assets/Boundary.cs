@@ -9,7 +9,7 @@ public class Boundary : Object
     private boundaryHeight;*/
 
     private Vector2 pos;
-    
+
     private Room room1;
     private Room room2;
 
@@ -40,10 +40,15 @@ public class Boundary : Object
         return this.pos;
     }
 
+    public GameObject getGameObject()
+    {
+        return prefab;
+    }
+
     public Room getOtherRoom(Room inputRoom)
     {
-        return room1 == inputRoom ? room2 : 
-               room2 == inputRoom ? room1 : 
+        return room1 == inputRoom ? room2 :
+               room2 == inputRoom ? room1 :
                                     null; //null is in case inputRoom is unrelated
     }
 
