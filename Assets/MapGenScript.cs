@@ -209,7 +209,13 @@ public class MapGenScript : MonoBehaviour
         newWall.name = name;
         Wall wall = new Wall(newWall, wallPos, room1, room2); //creates wall object
 
+<<<<<<< HEAD
         wallMap[wallPos] = wall; // saving the newWall data into out dictionary so we can pick some from it later to delete
+=======
+        wallMap[wallPos] = newWall; // saving the newWall data into out dictionary so we can pick some from it later to delete
+
+        Wall wall = new Wall(newWall, wallPos); //We need to call the 'room1' and 'room2' here
+>>>>>>> b71a179dd27a3f7fa0497db87e73102d6daa7abe
     }
 
     // destroys the wall at the Vector2 position given to it
@@ -260,8 +266,11 @@ public class MapGenScript : MonoBehaviour
 
         Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
         Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
+<<<<<<< HEAD
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
+=======
+>>>>>>> b71a179dd27a3f7fa0497db87e73102d6daa7abe
     }
 
     private void genSeed()

@@ -5,8 +5,13 @@ using UnityEngine;
 public class EnclosedArea : Object
 {
     //currently EnclosedAreas can access their composed rooms and all the traversible boundaries on their edges
+<<<<<<< HEAD
     private List<Room> rooms;
     private List<Boundary> travBounds; //travBounds are traversible boundaries (e.g. doors), and operate like 'edges' in a graph
+=======
+    List<Room> rooms;
+    List<Boundary> travBounds; //travBounds are traversible boundaries (e.g. doors), and operate like 'edges' in a graph
+>>>>>>> b71a179dd27a3f7fa0497db87e73102d6daa7abe
     public EnclosedArea(List<Room> rooms)
     {
         this.rooms = rooms;
@@ -47,6 +52,12 @@ public class EnclosedArea : Object
         }
     }
 
+
+    //rooms don't have access to their boundaries, so boundaries will be scraped from all NON-WALL boundaries and added in
+    public void addBoundary(Boundary travBoundary)
+    {
+        travBounds.Add(travBoundary);
+    }
 
     //rooms don't have access to their boundaries, so boundaries will be scraped from all NON-WALL boundaries and added in
     public void addBoundary(Boundary travBoundary)

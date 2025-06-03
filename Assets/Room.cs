@@ -49,6 +49,7 @@ public class Room : Object
         this.enclosedArea = enclosedArea;
     }
 
+<<<<<<< HEAD
     public void setRoomValue(int roomValue)
     {
         this.roomValue = roomValue;
@@ -58,5 +59,7 @@ public class Room : Object
     {
         return this.prefab;
     }
+=======
+>>>>>>> b71a179dd27a3f7fa0497db87e73102d6daa7abe
 
 }
