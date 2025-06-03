@@ -49,5 +49,14 @@ public class Room : Object
         this.enclosedArea = enclosedArea;
     }
 
+    public void setRoomValue(int roomValue)
+    {
+        this.roomValue = roomValue;
+    }
+
+    public GameObject getGameObject()
+    {
+        return this.prefab;
+    }
 
 }

@@ -38,6 +38,7 @@ public class MapGenScript : MonoBehaviour
         generateWalls();
         generateDoors();
 
+        
         //printWallMap();
     }
 
@@ -68,8 +69,17 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
+                GameObject newRoom; //This assigns the clone to a new GameObject and then alters that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
+                Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
+
+                newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
+                newRoom.name = roomMap[x, y].ToString();
+
                 roomMap[y, x] = roomNumber;
                 roomNumber++;
+
+                rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
+                rooms[y, x].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
             }
         }
 
@@ -83,10 +93,14 @@ public class MapGenScript : MonoBehaviour
                 if (down < MERGE_ODDS && y != MAP_HEIGHT - 1)
                 {
                     roomMap[y + 1, x] = roomMap[y, x];
+                    rooms[y, x].setRoomValue(roomMap[y + 1, x]);
+                    EnclosedArea.union(rooms[y + 1, x].getEnclosedArea(), rooms[y, x].getEnclosedArea());
                 }
                 if (right < MERGE_ODDS && x != MAP_WIDTH - 1)
                 {
                     roomMap[y, x + 1] = roomMap[y, x];
+                    rooms[y, x].setRoomValue(roomMap[y, x + 1]);
+                    EnclosedArea.union(rooms[y, x + 1].getEnclosedArea(), rooms[y, x].getEnclosedArea());
                 }
             }
         }
@@ -116,27 +130,14 @@ public class MapGenScript : MonoBehaviour
         {
             for (int x = 0; x < MAP_WIDTH; x++)
             {
-                drawRoom(y, x, colorList);
+                SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
+                sprite.color = colorList[roomMap[y, x] - 1];
             }
         }
 
         //draws a starter room
     }
 
-    private void drawRoom(int x, int y, Color32[] colorList)
-    {
-        GameObject newRoom; // just learned this is a thing you can do where you assign the clone to a new GameObject and then alter that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
-        Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
-
-        newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
-
-        newRoom.name = roomMap[x, y].ToString();
-
-        SpriteRenderer sprite = newRoom.GetComponent<SpriteRenderer>();
-        sprite.color = colorList[roomMap[y, x] - 1];
-
-        Room room = new Room(newRoom, roomPos, roomMap[y, x]);
-    }
 
     private void generateWalls()
     {
@@ -217,7 +218,7 @@ public class MapGenScript : MonoBehaviour
         // checks the dictionary at the pos passed in and grabs the wall gameobject that was stored there in generateWall to delete
         if (wallMap.TryGetValue(wallPos, out Wall wall))
         {
-            Destroy(wall);
+            Destroy(wall.getGameObject());
             wallMap.Remove(wallPos);
         }
     }
@@ -258,7 +259,9 @@ public class MapGenScript : MonoBehaviour
         newDoor.name = name;
 
         Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
-        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2()); //FIX
+        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
+        wall.getRoom1().getEnclosedArea().addBoundary(door); 
+        wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
 
     private void genSeed()
