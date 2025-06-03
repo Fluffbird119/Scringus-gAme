@@ -31,10 +31,6 @@ public class MapGenScript : MonoBehaviour
 
         initializeRoomMap();
 
-        Color32[] colorList = initializeColorArray();
-
-        drawRooms(colorList);
-
         generateWalls();
         generateDoors();
 
@@ -69,21 +65,14 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
-                GameObject newRoom; //This assigns the clone to a new GameObject and then alters that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
-                Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
-
-                newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
-                newRoom.name = roomMap[x, y].ToString();
-
                 roomMap[y, x] = roomNumber;
                 roomNumber++;
-
-                rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
-                rooms[y, x].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
             }
         }
 
-        // goes right to left top to bottom to see if rooms can merge and make connected large rooms
+        Color32[] colorList = initializeColorArray();
+
+        // goes left to right bottom to top to see if rooms can merge and make connected large rooms
         for (int x = 0; x < MAP_WIDTH; x++)
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
@@ -93,13 +82,30 @@ public class MapGenScript : MonoBehaviour
                 if (down < MERGE_ODDS && y != MAP_HEIGHT - 1)
                 {
                     roomMap[y + 1, x] = roomMap[y, x];
-                    rooms[y, x].setRoomValue(roomMap[y + 1, x]);
-                    EnclosedArea.union(rooms[y + 1, x].getEnclosedArea(), rooms[y, x].getEnclosedArea());
                 }
                 if (right < MERGE_ODDS && x != MAP_WIDTH - 1)
                 {
                     roomMap[y, x + 1] = roomMap[y, x];
-                    rooms[y, x].setRoomValue(roomMap[y, x + 1]);
+                }
+
+                drawRoom(colorList[roomMap[y, x] - 1], x, y);
+
+            }
+        }
+
+        for (int x = 0; x < MAP_WIDTH; x++)
+        {
+            for (int y = 0; y < MAP_HEIGHT; y++)
+            {
+
+                if (y != MAP_HEIGHT - 1 && roomMap[y + 1, x] == roomMap[y, x])
+                {
+                    rooms[y + 1, x].setRoomValue(roomMap[y, x]);
+                    EnclosedArea.union(rooms[y + 1, x].getEnclosedArea(), rooms[y, x].getEnclosedArea());
+                }
+                if (x != MAP_WIDTH - 1 && roomMap[y, x + 1] == roomMap[y, x])
+                {
+                    rooms[y, x + 1].setRoomValue(roomMap[y, x]);
                     EnclosedArea.union(rooms[y, x + 1].getEnclosedArea(), rooms[y, x].getEnclosedArea());
                 }
             }
@@ -123,17 +129,18 @@ public class MapGenScript : MonoBehaviour
     }
 
     // actually puts all the rooms on screen using the color list for the colors and the numbers from the roomMap to determine what colors they are
-    private void drawRooms(Color32[] colorList)
+    private void drawRoom(Color32 col, int x, int y)
     {
-        //draws each room based on room map
-        for (int y = 0; y < MAP_HEIGHT ; y++)
-        {
-            for (int x = 0; x < MAP_WIDTH; x++)
-            {
-                SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
-                sprite.color = colorList[roomMap[y, x] - 1];
-            }
-        }
+        GameObject newRoom; //This assigns the clone to a new GameObject and then alters that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
+        Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
+
+        newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
+        rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
+        newRoom.name = roomMap[y, x].ToString();
+        rooms[y, x].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
+        SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
+        sprite.color = col;
+            
 
         //draws a starter room
     }
