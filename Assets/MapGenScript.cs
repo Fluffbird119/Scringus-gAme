@@ -61,9 +61,9 @@ public class MapGenScript : MonoBehaviour
     {
         // Makes "roomMap" array from 1 to the max size
         int roomNumber = 1;
-        for (int x = 0; x < MAP_WIDTH; x++)
+        for (int y = 0; y < MAP_HEIGHT; y++) 
         {
-            for (int y = 0; y < MAP_HEIGHT; y++)
+            for (int x = 0; x < MAP_WIDTH; x++)
             {
                 roomMap[y, x] = roomNumber;
                 roomNumber++;
@@ -120,7 +120,7 @@ public class MapGenScript : MonoBehaviour
         {
             for (int j = 0; j < roomMap.GetLength(1); j++)
             {
-                sb.Append(roomMap[j, i]);
+                sb.Append(roomMap[i, j]);
                 sb.Append(' ');
             }
             sb.AppendLine();
