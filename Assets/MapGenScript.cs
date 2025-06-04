@@ -34,8 +34,8 @@ public class MapGenScript : MonoBehaviour
 
         drawRooms();
 
-        Room starterRoom = drawStarterRoom();
         generateWalls();
+        Room starterRoom = drawStarterRoom();
         //generateIntitialDoors();
         generateDoors();
 
@@ -144,7 +144,8 @@ public class MapGenScript : MonoBehaviour
 
         rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
         newRoom.name = roomMap[y, x].ToString();
-        rooms[y, x].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
+        EnclosedArea enclosedArea = new EnclosedArea(rooms[y, x]);
+        rooms[y, x].setEnclosedArea(enclosedArea); //creates an enclosed area for every room (they will be merged)
 
         SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
         sprite.color = col;
@@ -173,7 +174,10 @@ public class MapGenScript : MonoBehaviour
         generateWall((MAP_WIDTH / 2 + 1 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), starterRoom, null,
             true, "Right Boundary at y = " + (MAP_HEIGHT).ToString(), true);
 
-        starterRoom.setEnclosedArea(new EnclosedArea(starterRoom));
+        EnclosedArea area = new EnclosedArea(starterRoom);
+        starterRoom.setEnclosedArea(area);
+
+        wallMap[rooms[0, 3].getWalls()[(int)Room.Direction.UP].getPos()].setRoom1(starterRoom);
         return starterRoom;
     }
 
@@ -328,6 +332,7 @@ public class MapGenScript : MonoBehaviour
 
         Door door = new Door(newDoor, pos, wall.getRoom1(), wall.getRoom2());
         doorMap[pos] = door;
+        Debug.Log(wall.getRoom1());
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
