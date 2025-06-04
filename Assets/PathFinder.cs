@@ -8,24 +8,6 @@ using UnityEngine;
 
 public class PathFinder : MonoBehaviour
 {
-    public List<Boundary> getPathBetweenRooms(Room roomA, Room roomB)
-    {
-        List<Boundary> path = new List<Boundary>();
-
-        int minDist = MapGenScript.MAP_WIDTH * MapGenScript.MAP_HEIGHT;
-        foreach (EnclosedArea area in findKnownAreas(roomA))
-        {
-            foreach (Room currRoom in area.getRooms())
-            {
-                int currDist = roomB.getDistanceFromRoom(currRoom);
-                if (currDist < minDist)
-                {
-                    minDist = currDist;
-                }
-            }
-        }
-        return path;
-    }
 
     //takes any 2 rooms and sees if they are connected by some path
     public static bool areRoomsConnected(Room roomA, Room roomB)
@@ -71,50 +53,6 @@ public class PathFinder : MonoBehaviour
                         queue.Enqueue(neighbour);
                     }
                 }
-            }
-        }
-    }
-
-    private List<EnclosedArea> findKnownAreas(Room room)
-    {
-        spanningTree(room);
-
-        List<EnclosedArea> knownAreas = new List<EnclosedArea>();
-        for (int i = 0; i < MapGenScript.MAP_WIDTH; i++)
-        {
-            for (int j = 0; j < MapGenScript.MAP_HEIGHT; j++)
-            {
-                EnclosedArea currArea = MapGenScript.rooms[j, i].getEnclosedArea();
-                if (currArea.isKnown() && !knownAreas.Contains(currArea))
-                {
-                    knownAreas.Add(currArea);
-                }
-            }
-        }
-        foreach (Room currRoom in MapGenScript.rooms)
-        {
-            currRoom.getEnclosedArea().clearVertexInfo(); //this wipes the vertex info for everything immediately
-        }
-        return knownAreas;
-    }
-
-    private void collectionOfDebugWhathaveyou()
-    {
-        int initX = MapGenScript.MAP_WIDTH / 2;
-        int initY = MapGenScript.MAP_HEIGHT / 2;
-        Debug.Log(areRoomsConnected(MapGenScript.rooms[initY, initX], MapGenScript.rooms[0, 0]) + " what");
-        for (int currY = 0; currY < MapGenScript.MAP_HEIGHT; currY++)
-        {
-            for (int currX = 0; currX < MapGenScript.MAP_WIDTH; currX++)
-            {
-                //Debug.Log("is room[" + initY + ", " + initX + "] and room[" + currY + ", " + currX + "] conected:" + 
-                //                  areRoomsConnected(rooms[initY, initX], rooms[currY, currX]));
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                //EnclosedArea EA = new EnclosedArea(rooms[currY, currX]);
-
-                //rooms[currY, currX].setEnclosedArea(EA);
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                Debug.Log("plus, room at [" + currY + ", " + currX + "]: " + MapGenScript.rooms[currY, currX].getEnclosedArea().isKnown());
             }
         }
     }

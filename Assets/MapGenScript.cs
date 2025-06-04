@@ -268,23 +268,6 @@ public class MapGenScript : MonoBehaviour
         }
     }
 
-    public void generateIntitialDoors()
-    {
-        Vector2[] keyArray = wallMap.Keys.ToArray();
-        for (int i = 0; i < keyArray.Length; i++)
-        {
-            Vector2 pos = keyArray[i];
-            float makeDoor = Random.Range(0f, 1f);
-            if (makeDoor < 0.2 
-                && pos.x != -.5f * Room.ROOM_UNIT && pos.x != MAP_WIDTH * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT
-                && pos.y != -.5f * Room.ROOM_UNIT && pos.y != MAP_HEIGHT * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT)
-            {
-                generateDoor(wallMap[keyArray[i]]);
-            }
-        }
-
-    }
-
     public void generateDoors()
     {
         Room goalRoom = rooms[0, MAP_WIDTH / 2];
@@ -332,7 +315,6 @@ public class MapGenScript : MonoBehaviour
 
         Door door = new Door(newDoor, pos, wall.getRoom1(), wall.getRoom2());
         doorMap[pos] = door;
-        Debug.Log(wall.getRoom1());
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
@@ -353,19 +335,6 @@ public class MapGenScript : MonoBehaviour
             Random.InitState(seed);
 
             Debug.Log("Seed Is: " + seed);
-        }
-    }
-
-    
-
-
-
-    private void printWallMap()
-    {
-        // thanks reddit
-        foreach (var i in wallMap)
-        {
-            Debug.Log($"Key: {i.Key}, Value: {i.Value}"); //Cu is going to alter wallmap to be a disct<pos,Boundary>
         }
     }
 }
