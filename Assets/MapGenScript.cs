@@ -33,21 +33,16 @@ public class MapGenScript : MonoBehaviour
         genSeed();
 
         drawRooms();
-        Room starterRoom = drawStarterRoom();
 
+        Room starterRoom = drawStarterRoom();
         generateWalls();
-        generateIntitialDoors();
-        generateDoors(starterRoom);
+        //generateIntitialDoors();
+        generateDoors();
 
         //collectionOfDebugWhathaveyou();
 
         //printWallMap();
-        List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
 
-        foreach (int pathIndex in path)
-        {
-            Debug.Log(pathIndex);  
-        }
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -149,8 +144,7 @@ public class MapGenScript : MonoBehaviour
 
         rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
         newRoom.name = roomMap[y, x].ToString();
-        EnclosedArea enclosedArea = new EnclosedArea(rooms[y, x]);
-        rooms[y, x].setEnclosedArea(enclosedArea); //creates an enclosed area for every room (they will be merged)
+        rooms[y, x].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
 
         SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
         sprite.color = col;
@@ -179,6 +173,7 @@ public class MapGenScript : MonoBehaviour
         generateWall((MAP_WIDTH / 2 + 1 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), starterRoom, null,
             true, "Right Boundary at y = " + (MAP_HEIGHT).ToString(), true);
 
+        starterRoom.setEnclosedArea(new EnclosedArea(starterRoom));
         return starterRoom;
     }
 
@@ -280,45 +275,59 @@ public class MapGenScript : MonoBehaviour
                 && pos.x != -.5f * Room.ROOM_UNIT && pos.x != MAP_WIDTH * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT
                 && pos.y != -.5f * Room.ROOM_UNIT && pos.y != MAP_HEIGHT * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT)
             {
-                generateDoor(keyArray[i], wallMap[keyArray[i]]);
+                generateDoor(wallMap[keyArray[i]]);
             }
         }
 
     }
 
-    public void generateDoors(Room starterRoom)
+    public void generateDoors()
     {
-        /*
+        Room goalRoom = rooms[0, MAP_WIDTH / 2];
         foreach(Room room in rooms)
         {
-            if (!areRoomsConnected(starterRoom, room)) 
+            List<int> path = null;
+            if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom)) 
             {
-
+                path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
+            } else
+            {
+                continue;
             }
-        }*/
+            List<Wall> wallsToBeReplaced = PathFinder.ReplaceWallsAlongPath(path, room, rooms);
+
+            if (wallsToBeReplaced.Count > 0)
+            {
+                foreach (Wall wall in wallsToBeReplaced)
+                {
+                    generateDoor (wall);
+                }
+            }
+        }
+
+        generateDoor(goalRoom.getWalls()[(int)Room.Direction.UP]);
     }
 
-    public void generateDoor(Vector2 wallPos, Wall wall)
+    public void generateDoor(Wall wall)
     {
-        destroyWall(wallPos);
+        Vector2 pos = wall.getPos();
+        destroyWall(pos);
         bool orientation = wall.getGameObject().transform.rotation.z == 0;
         GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
-
         if (orientation)
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.identity);
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.identity);
         }
         else
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.AngleAxis(90, Vector3.forward));
         }
 
         string name = "door";
         newDoor.name = name;
 
-        Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
-        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
-        doorMap[doorPos] = door;
+        Door door = new Door(newDoor, pos, wall.getRoom1(), wall.getRoom2());
+        doorMap[pos] = door;
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }

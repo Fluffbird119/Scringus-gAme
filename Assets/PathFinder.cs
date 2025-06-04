@@ -28,14 +28,14 @@ public class PathFinder : MonoBehaviour
     }
 
     //takes any 2 rooms and sees if they are connected by some path
-    public bool areRoomsConnected(Room roomA, Room roomB)
+    public static bool areRoomsConnected(Room roomA, Room roomB)
     {
         spanningTree(roomA); //changes all 'known' and 'previousArea' values to reflect paths from roomA
         return roomB.getEnclosedArea().isKnown();
         //Enclosed areas currently have no toString method or really any designation, but this 'spanningTree can very easily generate the path backwards
     }
 
-    private void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
+    private static void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
     {
         foreach (Room room in MapGenScript.rooms)
         {
@@ -128,11 +128,12 @@ public class PathFinder : MonoBehaviour
         var startPair = new Tuple<int, Room>(0, start);
         queue.Enqueue(startPair);
         parents[start] = null;
+        int test = 0;
         while (queue.Count > 0)
         {
             var pair = queue.Dequeue();
             var room = pair.Item2;
-            visited[(int)(room.getPos().y / Room.ROOM_UNIT), (int)(room.getPos().x / Room.ROOM_UNIT)] = true;
+            visited[room.row(), room.col()] = true;
 
             if (room.Equals(end)) //for some reason, start and end are equal
             {
@@ -143,6 +144,7 @@ public class PathFinder : MonoBehaviour
                 var neighbors = GetUnvisitedNeighbors(room, grid, visited);
                 foreach (var neighbor in neighbors)
                 {
+                    test++;
                     var neighborRoom = neighbor.Item2;
                     if (!parents.ContainsKey(neighborRoom)) 
                     {
@@ -152,7 +154,7 @@ public class PathFinder : MonoBehaviour
                 }
             }
         }
-
+        Debug.Log(test);
         return null;
     }
 
@@ -207,9 +209,20 @@ public class PathFinder : MonoBehaviour
         return neighbors;
     }
 
-    public List<Wall> findWallsAlongPath(List<int> path, Room start, Room end, Room[,] rooms)
+    public static List<Wall> ReplaceWallsAlongPath(List<int> path, Room start, Room[,] rooms)
     {
         List<Wall> walls = new List<Wall>();
+        Room currRoom = start;
+        if (path != null)
+        {
+            foreach (int direction in path)
+            {
+                if (currRoom.getWalls().ContainsKey(direction))
+                {
+                    walls.Add(currRoom.getWalls()[direction]);
+                }
+            }
+        }
         return walls;
     }
 
