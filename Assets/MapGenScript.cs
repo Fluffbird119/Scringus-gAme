@@ -68,7 +68,7 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
-                roomMap[y, x] = roomNumber;
+                roomMap[x, y] = roomNumber;
                 roomNumber++;
             }
         }
@@ -145,8 +145,6 @@ public class MapGenScript : MonoBehaviour
         SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
         sprite.color = col;
             
-
-        //draws a starter room
     }
 
 
