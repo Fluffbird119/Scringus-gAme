@@ -20,12 +20,13 @@ public class MapGenScript : MonoBehaviour
 
     public int[,] roomMap = new int[MAP_WIDTH,MAP_HEIGHT];
 
-    public Room[,] rooms = new Room[MAP_WIDTH,MAP_HEIGHT];
+    public static Room[,] rooms = new Room[MAP_WIDTH,MAP_HEIGHT];
 
     public int seed = 0; //set to 0 to generate random seeds
 
     // dictionaries in C# are silly
-    private Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); //altered to <Vector2, Wall>
+    public static Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); 
+    public static Dictionary<Vector2, Door> doorMap = new Dictionary<Vector2, Door>();
 
     void Start()
     {
@@ -38,9 +39,15 @@ public class MapGenScript : MonoBehaviour
         generateIntitialDoors();
         generateDoors(starterRoom);
 
-        collectionOfDebugWhathaveyou();
+        //collectionOfDebugWhathaveyou();
 
         //printWallMap();
+        List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
+
+        foreach (int pathIndex in path)
+        {
+            Debug.Log(pathIndex);  
+        }
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -311,6 +318,7 @@ public class MapGenScript : MonoBehaviour
 
         Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
         Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
+        doorMap[doorPos] = door;
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
@@ -333,90 +341,8 @@ public class MapGenScript : MonoBehaviour
             Debug.Log("Seed Is: " + seed);
         }
     }
-    //takes any 2 rooms and sees if they are connected by some path
-    public bool areRoomsConnected(Room roomA, Room roomB)
-    {
-        spanningTree(roomA); //changes all 'known' and 'previousArea' values to reflect paths from roomA
-        return roomB.getEnclosedArea().isKnown();
-        //Enclosed areas currently have no toString method or really any designation, but this 'spanningTree can very easily generate the path backwards
-    }
-    public List<EnclosedArea> roomConnectedPath(Room roomA, Room roomB) //returns path from B to A (includes roomB and roomA)
-    {
-        List<EnclosedArea> pathBtoA = new List<EnclosedArea>();
-        spanningTree(roomA);
-        if(roomB.getEnclosedArea().isKnown()) //makes sure they actually have a path (otherwise returns an empty list)
-        {
-            for(EnclosedArea currEncArea = roomB.getEnclosedArea(); currEncArea != null; currEncArea = currEncArea.previousArea())
-            {
-                pathBtoA.Add(currEncArea);
-            }
-        }
-        return pathBtoA;
-    }
-    private void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
-    {
-        foreach(Room room in rooms)
-        {
-            room.getEnclosedArea().clearVertexInfo(); //this wipes the vertex info for everything immediately
-        }
-        EnclosedArea initEncArea = initRoom.getEnclosedArea();
-        //List<EnclosedArea> foundEnclosedAreas = new List<EnclosedArea>(); //this list tells me which enclosed areas I have seen
-        Queue<EnclosedArea> queue = new Queue<EnclosedArea>();
-        queue.Enqueue(initEncArea);
-        while (queue.Count > 0)
-        {
-            EnclosedArea currentEncArea = queue.Dequeue();
-            currentEncArea.makeKnown();
-            foreach(Boundary edge in currentEncArea.getTravBoundList())
-            {
-                EnclosedArea debugOption1 = edge.getRoom1().getEnclosedArea(); //the next several lines literally just choose the side of the boundary
-                EnclosedArea debugOption2 = edge.getRoom2().getEnclosedArea(); //that isn't the currrentEncArea, but due to a whole lot of debugging, 
-                EnclosedArea neighbour = null;                                 //I ultimately deleted the fn that did this and left the debug that works here.
-                if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption1))//I'll prolly optimise it at some point if needed -[Cu]
-                {
-                    neighbour = debugOption2;
-                }
-                else if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption2))
-                {
-                    neighbour = debugOption1;
-                }                                                              //this is the last line of the debug that I should prolly alter.
 
-                if (neighbour.isKnown() == false)
-                {
-                    if(neighbour.previousArea() == null)
-                    {
-                        neighbour.setPreviousArea(currentEncArea);
-                        queue.Enqueue(neighbour);
-                    }
-                }
-            }
-        }
-    }
-
-
-    private void collectionOfDebugWhathaveyou()
-    {
-        int initX = MAP_WIDTH/2;
-        int initY = MAP_HEIGHT/2;
-        Debug.Log(areRoomsConnected(rooms[initY, initX], rooms[0, 0]) + " what");
-        for (int currY = 0; currY < MAP_HEIGHT; currY++)
-        {
-            for (int currX = 0; currX < MAP_WIDTH; currX++)
-            {
-                //Debug.Log("is room[" + initY + ", " + initX + "] and room[" + currY + ", " + currX + "] conected:" + 
-                //                  areRoomsConnected(rooms[initY, initX], rooms[currY, currX]));
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                //EnclosedArea EA = new EnclosedArea(rooms[currY, currX]);
-
-                //rooms[currY, currX].setEnclosedArea(EA);
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                Debug.Log("plus, room at ["+currY+", "+currX+"]: "+ rooms[currY, currX].getEnclosedArea().isKnown());
-            }
-        }
-        
-
-
-    }
+    
 
 
 

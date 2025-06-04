@@ -100,5 +100,9 @@ public class EnclosedArea : Object
         this.known = true;
     }
 
+    public List<Room> getRooms()
+    {
+        return rooms;
+    }
 
 }
