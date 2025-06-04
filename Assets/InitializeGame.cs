@@ -8,7 +8,7 @@ public class InitializeGame : MonoBehaviour
     void Start()
     {
         // MapGenScript.generateMaps
-        // SpawnEnemies.firstWave(MapGenScript.getRooms())
+        // Enemies.Spawn(MapGenScript.getRooms())
     }
 
     // Update is called once per frame
