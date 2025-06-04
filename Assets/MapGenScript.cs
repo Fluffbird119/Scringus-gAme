@@ -31,10 +31,12 @@ public class MapGenScript : MonoBehaviour
     {
         genSeed();
 
-        initializeRoomMap();
+        drawRooms();
+        Room starterRoom = drawStarterRoom();
 
         generateWalls();
-        generateDoors();
+        generateIntitialDoors();
+        generateDoors(starterRoom);
 
         collectionOfDebugWhathaveyou();
 
@@ -60,7 +62,7 @@ public class MapGenScript : MonoBehaviour
     }
 
     
-    private void initializeRoomMap()
+    private void drawRooms()
     {
         // Makes "roomMap" array from 1 to the max size
         int roomNumber = 1;
@@ -136,17 +138,42 @@ public class MapGenScript : MonoBehaviour
     {
         GameObject newRoom; //This assigns the clone to a new GameObject and then alters that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
         Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
-
         newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
+
         rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
         newRoom.name = roomMap[y, x].ToString();
         EnclosedArea enclosedArea = new EnclosedArea(rooms[y, x]);
         rooms[y, x].setEnclosedArea(enclosedArea); //creates an enclosed area for every room (they will be merged)
+
         SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
         sprite.color = col;
             
     }
 
+    public Room drawStarterRoom()
+    {
+        GameObject newRoom;
+        Vector2 roomPos = new Vector2((MAP_WIDTH / 2) * Room.ROOM_UNIT, (MAP_HEIGHT) * Room.ROOM_UNIT);
+
+        newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
+        newRoom.name = "Starter Room";
+
+        Room starterRoom = new Room(newRoom, roomPos, 0);
+
+        SpriteRenderer sprite = newRoom.GetComponent<SpriteRenderer>();
+        sprite.color = Color.black;
+
+        generateWall((MAP_WIDTH / 2) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT + 1 - 0.5f), null, starterRoom,
+            false, "Top Boundary at x = " + (MAP_WIDTH / 2).ToString(), true);
+
+        generateWall((MAP_WIDTH / 2 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), null, starterRoom,
+            true, "Left Boundary at y = " + (MAP_HEIGHT).ToString(), true);
+
+        generateWall((MAP_WIDTH / 2 + 1 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), starterRoom, null,
+            true, "Right Boundary at y = " + (MAP_HEIGHT).ToString(), true);
+
+        return starterRoom;
+    }
 
     private void generateWalls()
     {
@@ -158,40 +185,40 @@ public class MapGenScript : MonoBehaviour
                 if (x == 0)
                 {
                     generateWall(Room.ROOM_UNIT * -0.5f, y * Room.ROOM_UNIT, null, rooms[y, 0], 
-                                 true, "Left Boundary at y = " + y.ToString());
+                                 true, "Left Boundary at y = " + y.ToString(), false);
                 } 
 
                 // right boundary wall
                 if (x == MAP_WIDTH - 1)
                 {
                     generateWall(Room.ROOM_UNIT * (MAP_WIDTH -0.5f), y * Room.ROOM_UNIT, rooms[y, MAP_WIDTH - 1], null,
-                                 true, "Right Boundary at y = " + y.ToString());
+                                 true, "Right Boundary at y = " + y.ToString(), false);
 
                 }
                 // vertical walls between rooms
                 else if (roomMap[y, x] != roomMap[y, x + 1])
                 {
                     generateWall((x + 0.5f) * Room.ROOM_UNIT, (MAP_HEIGHT - y - 1) * Room.ROOM_UNIT, rooms[y, x], rooms[y, x + 1], 
-                                 true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")");
+                                 true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")", false);
                 }
 
                 // top boundary wall
                 if (y == MAP_HEIGHT - 1)
                 {
                     generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT - 0.5f), null, rooms[MAP_HEIGHT - 1, x],
-                                 false, "Top Boundary at x = " + x.ToString());
+                                 false, "Top Boundary at x = " + x.ToString(), false);
                 }
                 // bottom boundary wall
                 if (y == 0)
                 {
                     generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * -0.5f, rooms[0, x], null,
-                                 false, "Bot Boundary at x = " + x.ToString());
+                                 false, "Bot Boundary at x = " + x.ToString(), false);
                 } 
                 // horizontal walls between rooms
                  else if (roomMap[y, x] != roomMap[y - 1, x])
                 {
                     generateWall((x) * Room.ROOM_UNIT, ((MAP_HEIGHT - y - 1) + 0.5f) * Room.ROOM_UNIT, rooms[y, x], rooms[y - 1, x],
-                                 false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")");
+                                 false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")", false);
                 }
             }
         }
@@ -200,7 +227,7 @@ public class MapGenScript : MonoBehaviour
     /**
     * orientation is true for vertical, false for horizontal
     **/
-    private void generateWall(float x, float y, Room room1, Room room2, bool orientation, string name)
+    private void generateWall(float x, float y, Room room1, Room room2, bool orientation, string name, bool isStarterRoom)
     {
         Vector2 wallPos = new Vector2(x, y);
 
@@ -218,7 +245,10 @@ public class MapGenScript : MonoBehaviour
         newWall.name = name;
         Wall wall = new Wall(newWall, wallPos, room1, room2); //creates wall object
 
-        wallMap[wallPos] = wall; // saving the newWall data into out dictionary so we can pick some from it later to delete
+        if (!isStarterRoom)
+        {
+            wallMap[wallPos] = wall; // saving the newWall data into out dictionary so we can pick some from it later to delete
+        }
     }
 
     // destroys the wall at the Vector2 position given to it
@@ -232,7 +262,7 @@ public class MapGenScript : MonoBehaviour
         }
     }
 
-    public void generateDoors()
+    public void generateIntitialDoors()
     {
         Vector2[] keyArray = wallMap.Keys.ToArray();
         for (int i = 0; i < keyArray.Length; i++)
@@ -247,6 +277,18 @@ public class MapGenScript : MonoBehaviour
             }
         }
 
+    }
+
+    public void generateDoors(Room starterRoom)
+    {
+        /*
+        foreach(Room room in rooms)
+        {
+            if (!areRoomsConnected(starterRoom, room)) 
+            {
+
+            }
+        }*/
     }
 
     public void generateDoor(Vector2 wallPos, Wall wall)
@@ -337,6 +379,7 @@ public class MapGenScript : MonoBehaviour
             }
         }
     }
+
 
     private void collectionOfDebugWhathaveyou()
     {
