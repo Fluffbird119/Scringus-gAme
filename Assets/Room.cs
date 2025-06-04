@@ -16,7 +16,7 @@ public class Room : Object
     private Renderer rend;
     private int roomValue;
     private Vector2 pos;
-    private EnclosedArea enclosedArea; //refers back to 'parent' enclosed area, not set in constructor
+    private EnclosedArea enclosedArea = null; //refers back to 'parent' enclosed area, not set in constructor
 
     private MapGenScript mapGenScript;
     public Room(GameObject prefab, Vector2 pos, int roomValue)
@@ -49,7 +49,6 @@ public class Room : Object
         this.enclosedArea = enclosedArea;
     }
 
-<<<<<<< HEAD
     public void setRoomValue(int roomValue)
     {
         this.roomValue = roomValue;
@@ -59,7 +58,5 @@ public class Room : Object
     {
         return this.prefab;
     }
-=======
->>>>>>> b71a179dd27a3f7fa0497db87e73102d6daa7abe
 
 }

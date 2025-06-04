@@ -9,11 +9,7 @@ public class Boundary : Object
     private boundaryHeight;*/
 
     private Vector2 pos;
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> b71a179dd27a3f7fa0497db87e73102d6daa7abe
     private Room room1;
     private Room room2;
 
@@ -44,36 +40,8 @@ public class Boundary : Object
         return this.pos;
     }
 
-<<<<<<< HEAD
     public GameObject getGameObject()
     {
         return prefab;
     }
-
-    public Room getOtherRoom(Room inputRoom)
-    {
-        return room1 == inputRoom ? room2 :
-               room2 == inputRoom ? room1 :
-=======
-    public Room getOtherRoom(Room inputRoom)
-    {
-        return room1 == inputRoom ? room2 : 
-               room2 == inputRoom ? room1 : 
->>>>>>> b71a179dd27a3f7fa0497db87e73102d6daa7abe
-                                    null; //null is in case inputRoom is unrelated
-    }
-
-    //walls (exclusively) can attach a room to nowhere (i.e. be on border), in which case we'll return a null here
-    public Room getOtherRoom(EnclosedArea inputEnclosedArea) //uses an enclosed area to find the room on the other end
-    {
-        Room bucketRoom = null;
-        if (room1 != null && room2 != null) //makes sure both rooms are able to call their enclosedArea
-        {
-            bucketRoom = (room1.getEnclosedArea() == inputEnclosedArea) ? room2 :
-                         (room2.getEnclosedArea() == inputEnclosedArea) ? room1 :
-                                                                          null;
-        }
-        return bucketRoom;
-    }
-
 }
