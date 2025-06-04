@@ -16,7 +16,7 @@ public class Room : Object
     private Renderer rend;
     private int roomValue;
     private Vector2 pos;
-    private EnclosedArea enclosedArea; //refers back to 'parent' enclosed area, not set in constructor
+    private EnclosedArea enclosedArea = null; //refers back to 'parent' enclosed area, not set in constructor
 
     private MapGenScript mapGenScript;
     public Room(GameObject prefab, Vector2 pos, int roomValue)

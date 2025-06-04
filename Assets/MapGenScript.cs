@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
+using System;
 
 public class MapGenScript : MonoBehaviour
 {
@@ -29,16 +31,15 @@ public class MapGenScript : MonoBehaviour
     {
         genSeed();
 
-        initializeRoomMap();
-
-        Color32[] colorList = initializeColorArray();
-
-        drawRooms(colorList);
+        drawRooms();
+        Room starterRoom = drawStarterRoom();
 
         generateWalls();
-        generateDoors();
+        generateIntitialDoors();
+        generateDoors(starterRoom);
 
-        
+        collectionOfDebugWhathaveyou();
+
         //printWallMap();
     }
 
@@ -61,7 +62,7 @@ public class MapGenScript : MonoBehaviour
     }
 
     
-    private void initializeRoomMap()
+    private void drawRooms()
     {
         // Makes "roomMap" array from 1 to the max size
         int roomNumber = 1;
@@ -69,21 +70,19 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
-                GameObject newRoom; //This assigns the clone to a new GameObject and then alters that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
-                Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
-
-                newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
-                newRoom.name = roomMap[x, y].ToString();
-
+<<<<<<< HEAD
                 roomMap[x, y] = roomNumber;
                 roomNumber++;
-
-                rooms[x, y] = new Room(newRoom, roomPos, roomMap[y, x]);
-                rooms[x, y].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
+=======
+                roomMap[x, y] = roomNumber;
+                roomNumber++;
+>>>>>>> main
             }
         }
 
-        // goes right to left top to bottom to see if rooms can merge and make connected large rooms
+        Color32[] colorList = initializeColorArray();
+
+        // goes left to right bottom to top to see if rooms can merge and make connected large rooms
         for (int x = 0; x < MAP_WIDTH; x++)
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
@@ -93,13 +92,30 @@ public class MapGenScript : MonoBehaviour
                 if (down < MERGE_ODDS && y != MAP_HEIGHT - 1)
                 {
                     roomMap[y + 1, x] = roomMap[y, x];
-                    rooms[y, x].setRoomValue(roomMap[y + 1, x]);
-                    EnclosedArea.union(rooms[y + 1, x].getEnclosedArea(), rooms[y, x].getEnclosedArea());
                 }
                 if (right < MERGE_ODDS && x != MAP_WIDTH - 1)
                 {
                     roomMap[y, x + 1] = roomMap[y, x];
-                    rooms[y, x].setRoomValue(roomMap[y, x + 1]);
+                }
+
+                drawRoom(colorList[roomMap[y, x] - 1], x, y);
+
+            }
+        }
+
+        for (int x = 0; x < MAP_WIDTH; x++)
+        {
+            for (int y = 0; y < MAP_HEIGHT; y++)
+            {
+
+                if (y != MAP_HEIGHT - 1 && roomMap[y + 1, x] == roomMap[y, x])
+                {
+                    rooms[y + 1, x].setRoomValue(roomMap[y, x]);
+                    EnclosedArea.union(rooms[y + 1, x].getEnclosedArea(), rooms[y, x].getEnclosedArea());
+                }
+                if (x != MAP_WIDTH - 1 && roomMap[y, x + 1] == roomMap[y, x])
+                {
+                    rooms[y, x + 1].setRoomValue(roomMap[y, x]);
                     EnclosedArea.union(rooms[y, x + 1].getEnclosedArea(), rooms[y, x].getEnclosedArea());
                 }
             }
@@ -123,21 +139,46 @@ public class MapGenScript : MonoBehaviour
     }
 
     // actually puts all the rooms on screen using the color list for the colors and the numbers from the roomMap to determine what colors they are
-    private void drawRooms(Color32[] colorList)
+    private void drawRoom(Color32 col, int x, int y)
     {
-        //draws each room based on room map
-        for (int y = 0; y < MAP_HEIGHT ; y++)
-        {
-            for (int x = 0; x < MAP_WIDTH; x++)
-            {
-                SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
-                sprite.color = colorList[roomMap[y, x] - 1];
-            }
-        }
+        GameObject newRoom; //This assigns the clone to a new GameObject and then alters that. It makes it so any edits are going to the clone of the prefab not the prefab itself which is a lil more efficent i think
+        Vector2 roomPos = new Vector2(x * Room.ROOM_UNIT, (MAP_HEIGHT - (y + 1)) * Room.ROOM_UNIT);
+        newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
 
-        //draws a starter room
+        rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
+        newRoom.name = roomMap[y, x].ToString();
+        EnclosedArea enclosedArea = new EnclosedArea(rooms[y, x]);
+        rooms[y, x].setEnclosedArea(enclosedArea); //creates an enclosed area for every room (they will be merged)
+
+        SpriteRenderer sprite = rooms[y, x].getGameObject().GetComponent<SpriteRenderer>();
+        sprite.color = col;
+            
     }
 
+    public Room drawStarterRoom()
+    {
+        GameObject newRoom;
+        Vector2 roomPos = new Vector2((MAP_WIDTH / 2) * Room.ROOM_UNIT, (MAP_HEIGHT) * Room.ROOM_UNIT);
+
+        newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
+        newRoom.name = "Starter Room";
+
+        Room starterRoom = new Room(newRoom, roomPos, 0);
+
+        SpriteRenderer sprite = newRoom.GetComponent<SpriteRenderer>();
+        sprite.color = Color.black;
+
+        generateWall((MAP_WIDTH / 2) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT + 1 - 0.5f), null, starterRoom,
+            false, "Top Boundary at x = " + (MAP_WIDTH / 2).ToString(), true);
+
+        generateWall((MAP_WIDTH / 2 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), null, starterRoom,
+            true, "Left Boundary at y = " + (MAP_HEIGHT).ToString(), true);
+
+        generateWall((MAP_WIDTH / 2 + 1 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), starterRoom, null,
+            true, "Right Boundary at y = " + (MAP_HEIGHT).ToString(), true);
+
+        return starterRoom;
+    }
 
     private void generateWalls()
     {
@@ -149,40 +190,40 @@ public class MapGenScript : MonoBehaviour
                 if (x == 0)
                 {
                     generateWall(Room.ROOM_UNIT * -0.5f, y * Room.ROOM_UNIT, null, rooms[y, 0], 
-                                 true, "Left Boundary at y = " + y.ToString());
+                                 true, "Left Boundary at y = " + y.ToString(), false);
                 } 
 
                 // right boundary wall
                 if (x == MAP_WIDTH - 1)
                 {
                     generateWall(Room.ROOM_UNIT * (MAP_WIDTH -0.5f), y * Room.ROOM_UNIT, rooms[y, MAP_WIDTH - 1], null,
-                                 true, "Right Boundary at y = " + y.ToString());
+                                 true, "Right Boundary at y = " + y.ToString(), false);
 
                 }
                 // vertical walls between rooms
                 else if (roomMap[y, x] != roomMap[y, x + 1])
                 {
                     generateWall((x + 0.5f) * Room.ROOM_UNIT, (MAP_HEIGHT - y - 1) * Room.ROOM_UNIT, rooms[y, x], rooms[y, x + 1], 
-                                 true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")");
+                                 true, "Hori Wall at (" + x.ToString() + ", " + y.ToString() + ")", false);
                 }
 
                 // top boundary wall
                 if (y == MAP_HEIGHT - 1)
                 {
                     generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT - 0.5f), null, rooms[MAP_HEIGHT - 1, x],
-                                 false, "Top Boundary at x = " + x.ToString());
+                                 false, "Top Boundary at x = " + x.ToString(), false);
                 }
                 // bottom boundary wall
                 if (y == 0)
                 {
                     generateWall(x * Room.ROOM_UNIT, Room.ROOM_UNIT * -0.5f, rooms[0, x], null,
-                                 false, "Bot Boundary at x = " + x.ToString());
+                                 false, "Bot Boundary at x = " + x.ToString(), false);
                 } 
                 // horizontal walls between rooms
                  else if (roomMap[y, x] != roomMap[y - 1, x])
                 {
                     generateWall((x) * Room.ROOM_UNIT, ((MAP_HEIGHT - y - 1) + 0.5f) * Room.ROOM_UNIT, rooms[y, x], rooms[y - 1, x],
-                                 false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")");
+                                 false, "Vert Wall at (" + x.ToString() + ", " + y.ToString() + ")", false);
                 }
             }
         }
@@ -191,7 +232,7 @@ public class MapGenScript : MonoBehaviour
     /**
     * orientation is true for vertical, false for horizontal
     **/
-    private void generateWall(float x, float y, Room room1, Room room2, bool orientation, string name)
+    private void generateWall(float x, float y, Room room1, Room room2, bool orientation, string name, bool isStarterRoom)
     {
         Vector2 wallPos = new Vector2(x, y);
 
@@ -209,7 +250,10 @@ public class MapGenScript : MonoBehaviour
         newWall.name = name;
         Wall wall = new Wall(newWall, wallPos, room1, room2); //creates wall object
 
-        wallMap[wallPos] = wall; // saving the newWall data into out dictionary so we can pick some from it later to delete
+        if (!isStarterRoom)
+        {
+            wallMap[wallPos] = wall; // saving the newWall data into out dictionary so we can pick some from it later to delete
+        }
     }
 
     // destroys the wall at the Vector2 position given to it
@@ -223,7 +267,7 @@ public class MapGenScript : MonoBehaviour
         }
     }
 
-    public void generateDoors()
+    public void generateIntitialDoors()
     {
         Vector2[] keyArray = wallMap.Keys.ToArray();
         for (int i = 0; i < keyArray.Length; i++)
@@ -238,6 +282,18 @@ public class MapGenScript : MonoBehaviour
             }
         }
 
+    }
+
+    public void generateDoors(Room starterRoom)
+    {
+        /*
+        foreach(Room room in rooms)
+        {
+            if (!areRoomsConnected(starterRoom, room)) 
+            {
+
+            }
+        }*/
     }
 
     public void generateDoor(Vector2 wallPos, Wall wall)
@@ -282,25 +338,80 @@ public class MapGenScript : MonoBehaviour
             Debug.Log("Seed Is: " + seed);
         }
     }
-    /*
-    public bool roomHasPathToStart(Room currRoom, Room start)
+    //takes any 2 rooms and sees if they are connected by some path
+    public bool areRoomsConnected(Room roomA, Room roomB)
     {
-        Dictionary<Room, KeyValuePair<int, Room>> parents = new Dictionary<Room, KeyValuePair<int, Room>>();
-        bool[,] visitedRooms = new bool[MAP_WIDTH, MAP_HEIGHT];
-        Queue<KeyValuePair<int, Room>> queue = new Queue<KeyValuePair<int, Room>>();
-        KeyValuePair<int, Room> startPair = new KeyValuePair<int, Room>(0, currRoom);
-        queue.Enqueue(startPair);
-        KeyValuePair<int, Room> nullPair = new KeyValuePair<int, Room>(-1, null);
-        parents.Add(start, nullPair);
-
-        while(queue.Count > 0)
+        spanningTree(roomA); //changes all 'known' and 'previousArea' values to reflect paths from roomA
+        return roomB.getEnclosedArea().isKnown();
+        //Enclosed areas currently have no toString method or really any designation, but this 'spanningTree can very easily generate the path backwards
+    }
+    private void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
+    {
+        foreach(Room room in rooms)
         {
-            KeyValuePair<int, Room> currPair = queue.Dequeue();
+            room.getEnclosedArea().clearVertexInfo(); //this wipes the vertex info for everything immediately
+        }
+        EnclosedArea initEncArea = initRoom.getEnclosedArea();
+        //List<EnclosedArea> foundEnclosedAreas = new List<EnclosedArea>(); //this list tells me which enclosed areas I have seen
+        Queue<EnclosedArea> queue = new Queue<EnclosedArea>();
+        queue.Enqueue(initEncArea);
+        while (queue.Count > 0)
+        {
+            EnclosedArea currentEncArea = queue.Dequeue();
+            currentEncArea.makeKnown();
+            foreach(Boundary edge in currentEncArea.getTravBoundList())
+            {
+                EnclosedArea debugOption1 = edge.getRoom1().getEnclosedArea(); //the next several lines literally just choose the side of the boundary
+                EnclosedArea debugOption2 = edge.getRoom2().getEnclosedArea(); //that isn't the currrentEncArea, but due to a whole lot of debugging, 
+                EnclosedArea neighbour = null;                                 //I ultimately deleted the fn that did this and left the debug that works here.
+                if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption1))//I'll prolly optimise it at some point if needed -[Cu]
+                {
+                    neighbour = debugOption2;
+                }
+                else if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption2))
+                {
+                    neighbour = debugOption1;
+                }                                                              //this is the last line of the debug that I should prolly alter.
 
-            visitedRooms[currPair.Value.getPos().y, currPair.Value.getPos().x] = currPair;
+                if (neighbour.isKnown() == false)
+                {
+                    if(neighbour.previousArea() == null)
+                    {
+                        neighbour.setPreviousArea(currentEncArea);
+                        queue.Enqueue(neighbour);
+                    }
+                }
+            }
         }
     }
-    */
+
+
+    private void collectionOfDebugWhathaveyou()
+    {
+        int initX = MAP_WIDTH/2;
+        int initY = MAP_HEIGHT/2;
+        Debug.Log(areRoomsConnected(rooms[initY, initX], rooms[0, 0]) + " what");
+        for (int currY = 0; currY < MAP_HEIGHT; currY++)
+        {
+            for (int currX = 0; currX < MAP_WIDTH; currX++)
+            {
+                //Debug.Log("is room[" + initY + ", " + initX + "] and room[" + currY + ", " + currX + "] conected:" + 
+                //                  areRoomsConnected(rooms[initY, initX], rooms[currY, currX]));
+                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
+                //EnclosedArea EA = new EnclosedArea(rooms[currY, currX]);
+
+                //rooms[currY, currX].setEnclosedArea(EA);
+                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
+                Debug.Log("plus, room at ["+currY+", "+currX+"]: "+ rooms[currY, currX].getEnclosedArea().isKnown());
+            }
+        }
+        
+
+
+    }
+
+
+
     private void printWallMap()
     {
         // thanks reddit
