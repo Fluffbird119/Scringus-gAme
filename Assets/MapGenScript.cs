@@ -300,6 +300,19 @@ public class MapGenScript : MonoBehaviour
         return roomB.getEnclosedArea().isKnown();
         //Enclosed areas currently have no toString method or really any designation, but this 'spanningTree can very easily generate the path backwards
     }
+    public List<EnclosedArea> roomConnectedPath(Room roomA, Room roomB) //returns path from B to A (includes roomB and roomA)
+    {
+        List<EnclosedArea> pathBtoA = new List<EnclosedArea>();
+        spanningTree(roomA);
+        if(roomB.getEnclosedArea().isKnown()) //makes sure they actually have a path (otherwise returns an empty list)
+        {
+            for(EnclosedArea currEncArea = roomB.getEnclosedArea(); currEncArea != null; currEncArea = currEncArea.previousArea())
+            {
+                pathBtoA.Add(currEncArea);
+            }
+        }
+        return pathBtoA;
+    }
     private void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
     {
         foreach(Room room in rooms)
