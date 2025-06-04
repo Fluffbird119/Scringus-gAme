@@ -75,11 +75,11 @@ public class MapGenScript : MonoBehaviour
                 newRoom = Instantiate(roomPrefab, roomPos, Quaternion.identity);
                 newRoom.name = roomMap[x, y].ToString();
 
-                roomMap[y, x] = roomNumber;
+                roomMap[x, y] = roomNumber;
                 roomNumber++;
 
-                rooms[y, x] = new Room(newRoom, roomPos, roomMap[y, x]);
-                rooms[y, x].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
+                rooms[x, y] = new Room(newRoom, roomPos, roomMap[y, x]);
+                rooms[x, y].setEnclosedArea(new EnclosedArea(rooms[y, x])); //creates an enclosed area for every room (they will be merged)
             }
         }
 
