@@ -36,7 +36,6 @@ public class MapGenScript : MonoBehaviour
         Room starterRoom = drawStarterRoom();
 
         generateWalls();
-        generateIntitialDoors();
         generateDoors(starterRoom);
         
         //PathFinder.collectionOfDebugWhathaveyou();
@@ -289,21 +288,26 @@ public class MapGenScript : MonoBehaviour
 
     }
 
-    public void generateDoors(Room starterRoom)
+    public void cuGenerateDoors(Room starterRoom) //overloaded, this is the simple one
     {
+        cuGenerateDoors(starterRoom, true);
+    }
+    public void cuGenerateDoors(Room starterRoom, bool usingInitialDoors) // overloaded, this should hold all the extra booleans for choices
+    {
+        if(usingInitialDoors)
+        {
+            generateIntitialDoors(); //it works both with and without initial doors (with has a chance to be less sparse)
+        }
         PathFinder.allAccessAlgorithm(this);
         //presuming the starterroom is above the map for this (otherwise this could just search all four Directions to see which is valid), and change wall assignment below)
         Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
         starterBottomWall.attachRoom(starterRoom);
         generateDoor(starterBottomWall.getPos(), starterBottomWall);
-        /*
-        foreach(Room room in rooms)
-        {
-            if (!areRoomsConnected(starterRoom, room)) 
-            {
+    }
 
-            }
-        }*/
+    public void generateDoors(Room starterRoom) //I expect this to be able to swap between Luke's and Cu's
+    {
+        cuGenerateDoors(starterRoom);
     }
 
     public void generateDoor(Vector2 wallPos, Wall wall)
