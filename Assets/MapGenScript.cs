@@ -179,6 +179,9 @@ public class MapGenScript : MonoBehaviour
         generateWall((MAP_WIDTH / 2 + 1 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), starterRoom, null,
             true, "Right Boundary at y = " + (MAP_HEIGHT).ToString(), true);
 
+        EnclosedArea starterEnclosedArea = new EnclosedArea(starterRoom);
+        starterRoom.setEnclosedArea(starterEnclosedArea);
+        
         return starterRoom;
     }
 
@@ -289,6 +292,10 @@ public class MapGenScript : MonoBehaviour
     public void generateDoors(Room starterRoom)
     {
         PathFinder.allAccessAlgorithm(this);
+        //presuming the starterroom is above the map for this (otherwise this could just search all four Directions to see which is valid), and change wall assignment below)
+        Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
+        starterBottomWall.attachRoom(starterRoom);
+        generateDoor(starterBottomWall.getPos(), starterBottomWall);
         /*
         foreach(Room room in rooms)
         {

@@ -93,7 +93,7 @@ public class PathFinder : MonoBehaviour
         }
     }
 
-    public static void allAccessAlgorithm(MapGenScript mapGenInstance)
+    public static void allAccessAlgorithm(MapGenScript mapGenInstance) //makes comparatively sparse doors, also currently ignores starter room
     {
         allAccessAlgorithm(MapGenScript.rooms[MapGenScript.MAP_HEIGHT / 2, MapGenScript.MAP_WIDTH / 2], mapGenInstance);
     }
@@ -207,7 +207,7 @@ public class PathFinder : MonoBehaviour
         }
     }
 
-    private static List<EnclosedArea> findAllAreas()
+    private static List<EnclosedArea> findAllAreas() //note that the starter room is not in MapGenScript.rooms[,] so it and it's Enclosed area won't appear here
     {
         List<EnclosedArea> enclosedAreas = new List<EnclosedArea>();
         for (int i = 0; i < MapGenScript.MAP_WIDTH; i++)
