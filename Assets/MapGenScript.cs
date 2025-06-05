@@ -271,27 +271,34 @@ public class MapGenScript : MonoBehaviour
     public void generateDoors()
     {
         Room goalRoom = rooms[0, MAP_WIDTH / 2];
-        foreach(Room room in rooms)
+        for (int y = MAP_HEIGHT - 1; y >= 0; y--)
         {
-            List<int> path = null;
-            if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom)) 
+            for (int x = 0; x < MAP_WIDTH; x++)
             {
-                path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
-            } else
-            {
-                continue;
-            }
-            List<Wall> wallsToBeReplaced = PathFinder.ReplaceWallsAlongPath(path, room, rooms);
-
-            if (wallsToBeReplaced.Count > 0)
-            {
-                foreach (Wall wall in wallsToBeReplaced)
+                Room room = rooms[y, x];
                 {
-                    generateDoor (wall);
+                    List<int> path = null;
+                    if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom))
+                    {
+                        path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    List<Wall> wallsToBeReplaced = PathFinder.ReplaceWallsAlongPath(path, room, rooms);
+
+                    if (wallsToBeReplaced.Count > 0)
+                    {
+                        foreach (Wall wall in wallsToBeReplaced)
+                        {
+                            generateDoor(wall);
+                        }
+                    }
                 }
+
             }
         }
-
         generateDoor(goalRoom.getWalls()[(int)Room.Direction.UP]);
     }
 
