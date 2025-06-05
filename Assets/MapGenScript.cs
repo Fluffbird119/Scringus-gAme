@@ -24,7 +24,6 @@ public class MapGenScript : MonoBehaviour
 
     public int seed = 0; //set to 0 to generate random seeds
 
-    // dictionaries in C# are silly
     public static Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); 
     public static Dictionary<Vector2, Door> doorMap = new Dictionary<Vector2, Door>();
 
@@ -35,14 +34,10 @@ public class MapGenScript : MonoBehaviour
         drawRooms();
 
         generateWalls();
+
         Room starterRoom = drawStarterRoom();
-        //generateIntitialDoors();
+
         generateDoors();
-
-        //collectionOfDebugWhathaveyou();
-
-        //printWallMap();
-
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
