@@ -70,13 +70,10 @@ public class MapGenScript : MonoBehaviour
         {
             for (int y = 0; y < MAP_HEIGHT; y++)
             {
-<<<<<<< HEAD
                 roomMap[x, y] = roomNumber;
                 roomNumber++;
-=======
                 roomMap[x, y] = roomNumber;
                 roomNumber++;
->>>>>>> main
             }
         }
 
