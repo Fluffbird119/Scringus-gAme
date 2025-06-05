@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PathFinder : MonoBehaviour
 {
@@ -75,7 +77,7 @@ public class PathFinder : MonoBehaviour
 
             if (room.Equals(end)) //for some reason, start and end are equal
             {
-                return GetPath(parents, pair);
+                return ShufflePath(GetPath(parents, pair));
             }
             else
             {
@@ -94,6 +96,22 @@ public class PathFinder : MonoBehaviour
         }
         Debug.Log(test);
         return null;
+    }
+
+
+
+    public static List<int> ShufflePath(List<int> path)
+    {
+        int n = path.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = Random.Range(0, n + 1);
+            int value = path[k];
+            path[k] = path[n];
+            path[n] = value;
+        }
+        return path;
     }
 
     private static List<int> GetPath(Dictionary<Room, Tuple<int, Room>> parents, Tuple<int, Room> destinationPair)
@@ -155,9 +173,25 @@ public class PathFinder : MonoBehaviour
         {
             foreach (int direction in path)
             {
-                if (currRoom.getWalls().ContainsKey(direction))
+                if (currRoom.getWalls().ContainsKey(direction) && !areRoomsConnected(currRoom, rooms[0, MapGenScript.MAP_WIDTH / 2]))
                 {
                     walls.Add(currRoom.getWalls()[direction]);
+                }
+                switch (direction)
+                {
+                    case 1:
+                        currRoom = rooms[currRoom.row() - 1, currRoom.col()];
+                        break;
+                    case 2:
+                        currRoom = rooms[currRoom.row(), currRoom.col() + 1];
+                        break;
+                    case 3:
+                        currRoom = rooms[currRoom.row() + 1, currRoom.col()];
+                        break;
+                    case 4:
+                        currRoom = rooms[currRoom.row(), currRoom.col() - 1];
+                        break;
+
                 }
             }
         }
