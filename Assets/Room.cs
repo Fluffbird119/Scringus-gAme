@@ -150,15 +150,52 @@ public class Room : Object
         }
         return walls;
     }
-
-    override
-        public bool Equals(object obj)
+    public List<Wall> getListOfWalls()
     {
-        Room room = obj as Room;
-        if (this.row() == room.row() && this.col() == room.col())
+        List<Wall> bucketList = new List<Wall>();
+        Vector2[] keyArray = MapGenScript.wallMap.Keys.ToArray();
+        Vector2 up = new Vector2(this.pos.x, this.pos.y + ROOM_UNIT * 0.5f);
+        if (keyArray.Contains(up))
         {
-            return true;
+            bucketList.Add(MapGenScript.wallMap[up]);
         }
-        return false;
+        Vector2 right = new Vector2(this.pos.x + ROOM_UNIT * 0.5f, this.pos.y);
+        if (keyArray.Contains(right))
+        {
+            bucketList.Add(MapGenScript.wallMap[right]);
+        }
+        Vector2 down = new Vector2(this.pos.x, this.pos.y - ROOM_UNIT * 0.5f);
+        if (keyArray.Contains(down))
+        {
+            bucketList.Add(MapGenScript.wallMap[down]);
+        }
+        Vector2 left = new Vector2(this.pos.x - ROOM_UNIT * 0.5f, this.pos.y);
+        if (keyArray.Contains(left))
+        {
+            bucketList.Add(MapGenScript.wallMap[left]);
+        }
+        return bucketList;
+
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || !(obj is Room))
+        {
+            return false;
+        }
+        else
+        {
+            Room room = obj as Room;
+            if (this.row() == room.row() && this.col() == room.col())
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    public override int GetHashCode()
+    {
+        return (this.row() * 37) + (this.col()*1369);
     }
 }

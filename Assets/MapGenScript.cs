@@ -38,16 +38,16 @@ public class MapGenScript : MonoBehaviour
         generateWalls();
         generateIntitialDoors();
         generateDoors(starterRoom);
-
-        //collectionOfDebugWhathaveyou();
+        
+        //PathFinder.collectionOfDebugWhathaveyou();
 
         //printWallMap();
-        List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
+        /*List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
 
         foreach (int pathIndex in path)
         {
             Debug.Log(pathIndex);  
-        }
+        }*/
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -288,6 +288,7 @@ public class MapGenScript : MonoBehaviour
 
     public void generateDoors(Room starterRoom)
     {
+        PathFinder.allAccessAlgorithm(this);
         /*
         foreach(Room room in rooms)
         {

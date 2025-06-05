@@ -5,10 +5,11 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PathFinder : MonoBehaviour
 {
-    public List<Boundary> getPathBetweenRooms(Room roomA, Room roomB)
+    public static List<Boundary> getPathBetweenRooms(Room roomA, Room roomB)
     {
         List<Boundary> path = new List<Boundary>();
 
@@ -28,14 +29,31 @@ public class PathFinder : MonoBehaviour
     }
 
     //takes any 2 rooms and sees if they are connected by some path
-    public bool areRoomsConnected(Room roomA, Room roomB)
+    public static bool areRoomsConnected(Room roomA, Room roomB)
     {
         spanningTree(roomA); //changes all 'known' and 'previousArea' values to reflect paths from roomA
         return roomB.getEnclosedArea().isKnown();
         //Enclosed areas currently have no toString method or really any designation, but this 'spanningTree can very easily generate the path backwards
     }
+    public static List<EnclosedArea> roomConnectedPath(Room roomA, Room roomB) //returns path from B to A (includes roomB and roomA)
+    {
+        List<EnclosedArea> pathBtoA = new List<EnclosedArea>();
+        spanningTree(roomA);
+        if (roomB.getEnclosedArea().isKnown()) //makes sure they actually have a path (otherwise returns an empty list)
+        {
+            for (EnclosedArea currEncArea = roomB.getEnclosedArea(); System.Object.Equals(currEncArea,null); currEncArea = currEncArea.previousArea())
+            {
+                pathBtoA.Add(currEncArea);
+            }
+        }
+        return pathBtoA;
+    }
+    /*private List<EnclosedArea> allNonPathable()
+    {
 
-    private void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
+    }*/
+
+    private static void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
     {
         foreach (Room room in MapGenScript.rooms)
         {
@@ -65,7 +83,7 @@ public class PathFinder : MonoBehaviour
 
                 if (neighbour.isKnown() == false)
                 {
-                    if (neighbour.previousArea() == null)
+                    if (System.Object.Equals(neighbour.previousArea(),null))
                     {
                         neighbour.setPreviousArea(currentEncArea);
                         queue.Enqueue(neighbour);
@@ -75,7 +93,164 @@ public class PathFinder : MonoBehaviour
         }
     }
 
-    private List<EnclosedArea> findKnownAreas(Room room)
+    public static void allAccessAlgorithm(MapGenScript mapGenInstance)
+    {
+        allAccessAlgorithm(MapGenScript.rooms[MapGenScript.MAP_HEIGHT / 2, MapGenScript.MAP_WIDTH / 2], mapGenInstance);
+    }
+
+    //initRoom really doesn't matter, the public version will just call this with a preset room (like rooms[0,3] or something)\
+    //this is funny though, I'm sorta using a pseudo-kruskal's algorithm here! (we've got both prim and kruskal!)
+    private static void allAccessAlgorithm(Room initRoom, MapGenScript mapGenInstance) //mapGenInstance can be removed by making generateDoor static
+    {
+        //NOTE: for this method, a 'group' refers to a collection of EnclosedAreas that may traverse to one another
+        //A group is basically a collection of EnclosedAreas the exact same way an EnclosedArea is a collection of Rooms, there is just no need to make a separate class
+        //if two enclosed areas can traverse to eachother (via doors or whatever), they are definitionally part of the same group
+        //Queue<(EnclosedArea, bool)> ungroupedAreaQueue = new Queue<(EnclosedArea, bool)>();
+        Queue<EnclosedArea> ungroupedAreaQueue = new Queue<EnclosedArea>(); //all areas initially ungrouped and placed in queue
+        List<List<EnclosedArea>> listOfGroupedAreas = new List<List<EnclosedArea>>(); //a group will be a list of enclosed areas, hence the list of lists here
+        foreach (EnclosedArea enclosedArea in findAllAreas())
+        {
+            ungroupedAreaQueue.Enqueue(enclosedArea); //this just makes our queue with all enclosed areas
+        }
+
+        //the while loop will group all the enclosedAreas as defined above
+        while(ungroupedAreaQueue.Count > 0)
+        {
+            EnclosedArea currUngroupedArea = ungroupedAreaQueue.Dequeue(); //currUngroupedArea is the current area that will be placed into a group
+            bool alreadyGrouped = false; //using this bool is not the most optimised process (it would be better If I made a nested group class w/ an accesible bool field)
+            foreach (List<EnclosedArea> group in listOfGroupedAreas)
+            {
+                foreach (EnclosedArea enclosedArea in group)
+                {
+                    if (EnclosedArea.haveBeenUnioned(enclosedArea, currUngroupedArea))
+                    {
+                        alreadyGrouped = true;
+                        break;
+                    }
+                }
+                if(alreadyGrouped) //for efficiency, so when it finds a match it quits the loops
+                {
+                    break;
+                }
+            }
+            if(!alreadyGrouped) //if it's already in a group, it gets ignored
+            {
+                listOfGroupedAreas.Add(findKnownAreas(currUngroupedArea.getIdentityRoom()));
+            }
+        }
+        int DEBUG_COUNTER = 0;
+        //now that everything is grouped, it's time to run through individual walls to see if they connect two separate grouped areas!!!
+        while (listOfGroupedAreas.Count > 1 && DEBUG_COUNTER <= MapGenScript.MAP_WIDTH * MapGenScript.MAP_HEIGHT) //if there is one group of areas then everything is accessible
+        {
+            DEBUG_COUNTER++;
+            bool fastBreak = false;
+            int arbGroupIndex = Random.Range(0, listOfGroupedAreas.Count);
+            foreach(EnclosedArea enclosedArea in listOfGroupedAreas[arbGroupIndex])
+            {
+                foreach (Room room in enclosedArea.getRooms())
+                {
+                    List<Wall> roomWallList = room.getListOfWalls();
+                    foreach(Wall wall in roomWallList)
+                    {
+                        if(!System.Object.Equals(wall.getRoom1(), null) && !System.Object.Equals(wall.getRoom2(), null))//Object.Equals() NEEDED, will not work w/==null
+                        {
+                            EnclosedArea encArea1 = wall.getRoom1().getEnclosedArea();
+                            EnclosedArea encArea2 = wall.getRoom2().getEnclosedArea();
+                            int areaGpIndex1 = -1;
+                            int areaGpIndex2 = -1;
+                            foreach(List<EnclosedArea> targetGroup in listOfGroupedAreas)
+                            {
+                                foreach(EnclosedArea targetEnclosedArea in targetGroup)
+                                {
+                                    if(areaGpIndex1 == -1 && EnclosedArea.haveBeenUnioned(encArea1,targetEnclosedArea))
+                                    {
+                                        areaGpIndex1 = listOfGroupedAreas.IndexOf(targetGroup); //since ILists are not custom, this IndexOf better work
+                                    }
+                                    if (areaGpIndex2 == -1 && EnclosedArea.haveBeenUnioned(encArea2, targetEnclosedArea))
+                                    {
+                                        areaGpIndex2 = listOfGroupedAreas.IndexOf(targetGroup); //since ILists are not custom, this IndexOf better work
+                                    }
+                                    if(areaGpIndex1 != -1 && areaGpIndex2 != -1) //when they both have found the gp they belong to,m ends loop
+                                    {
+                                        break;
+                                    }
+                                }
+                                if (areaGpIndex1 != -1 && areaGpIndex2 != -1) //when they both have found the gp they belong to, ends loop
+                                {
+                                    break;
+                                }
+                            }
+
+                            if(areaGpIndex1 != areaGpIndex2) //i.e. if they belong different 'groups'
+                            {
+                                mapGenInstance.generateDoor(wall.getPos(), wall); //create door between 'groups' ALSO THIS IS THE ONLY LINE MAPGENINSTANCE IS USED
+                                foreach(EnclosedArea encAreaInSecondaryGroup in listOfGroupedAreas[areaGpIndex2])
+                                {
+                                    listOfGroupedAreas[areaGpIndex1].Add(encAreaInSecondaryGroup); //the groups are 'merged'
+                                }
+                                listOfGroupedAreas.RemoveAt(areaGpIndex2); //and once the first group has all the encAreas of the second, the second group is removed
+                                fastBreak = true; //because the later for loops won't recognise "areaGpIndex1 != areaGpIndex2" to know to break
+                                break;
+                            }
+                        }
+                    }
+                    if (fastBreak)
+                    {
+                        break;
+                    }
+                }
+                if(fastBreak)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    private static List<EnclosedArea> findAllAreas()
+    {
+        List<EnclosedArea> enclosedAreas = new List<EnclosedArea>();
+        for (int i = 0; i < MapGenScript.MAP_WIDTH; i++)
+        {
+            for (int j = 0; j < MapGenScript.MAP_HEIGHT; j++)
+            {
+                EnclosedArea currArea = MapGenScript.rooms[j, i].getEnclosedArea();
+                if (!enclosedAreas.Contains(currArea))
+                {
+                    enclosedAreas.Add(currArea);
+                }
+            }
+        }
+        foreach (Room currRoom in MapGenScript.rooms)
+        {
+            currRoom.getEnclosedArea().clearVertexInfo(); //this wipes the vertex info for everything immediately
+        }
+        return enclosedAreas;
+    }
+    private static List<EnclosedArea> findUnknownAreas(Room room)
+    {
+        spanningTree(room);
+
+        List<EnclosedArea> unknownAreas = new List<EnclosedArea>();
+        for (int i = 0; i < MapGenScript.MAP_WIDTH; i++)
+        {
+            for (int j = 0; j < MapGenScript.MAP_HEIGHT; j++)
+            {
+                EnclosedArea currArea = MapGenScript.rooms[j, i].getEnclosedArea();
+                if (!currArea.isKnown() && !unknownAreas.Contains(currArea))
+                {
+                    unknownAreas.Add(currArea);
+                }
+            }
+        }
+        foreach (Room currRoom in MapGenScript.rooms)
+        {
+            currRoom.getEnclosedArea().clearVertexInfo(); //this wipes the vertex info for everything immediately
+        }
+        return unknownAreas;
+    }
+
+    private static List<EnclosedArea> findKnownAreas(Room room)
     {
         spanningTree(room);
 
@@ -98,25 +273,18 @@ public class PathFinder : MonoBehaviour
         return knownAreas;
     }
 
-    private void collectionOfDebugWhathaveyou()
+    public static void collectionOfDebugWhathaveyou()
     {
-        int initX = MapGenScript.MAP_WIDTH / 2;
-        int initY = MapGenScript.MAP_HEIGHT / 2;
-        Debug.Log(areRoomsConnected(MapGenScript.rooms[initY, initX], MapGenScript.rooms[0, 0]) + " what");
-        for (int currY = 0; currY < MapGenScript.MAP_HEIGHT; currY++)
-        {
-            for (int currX = 0; currX < MapGenScript.MAP_WIDTH; currX++)
-            {
-                //Debug.Log("is room[" + initY + ", " + initX + "] and room[" + currY + ", " + currX + "] conected:" + 
-                //                  areRoomsConnected(rooms[initY, initX], rooms[currY, currX]));
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                //EnclosedArea EA = new EnclosedArea(rooms[currY, currX]);
-
-                //rooms[currY, currX].setEnclosedArea(EA);
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                Debug.Log("plus, room at [" + currY + ", " + currX + "]: " + MapGenScript.rooms[currY, currX].getEnclosedArea().isKnown());
-            }
-        }
+        Debug.Log("did it even finish?");
+        List<EnclosedArea> knownAreas = findKnownAreas(MapGenScript.rooms[0, 0]);
+        List<EnclosedArea> unknownAreas = findUnknownAreas(MapGenScript.rooms[0, 0]);
+        List<List<EnclosedArea>> listOfList = new List<List<EnclosedArea>>();
+        listOfList.Add(knownAreas); 
+        listOfList.Add(unknownAreas);
+        Debug.Log("index that SHOULD BE 0: " + listOfList.IndexOf(knownAreas));
+        Debug.Log("index that SHOULD BE 1: " + listOfList.IndexOf(unknownAreas));
+        List<Wall> roomWallList = MapGenScript.rooms[0,0].getListOfWalls();
+        Debug.Log("room[0,0] number of walls" + roomWallList.Count);
     }
 
     public static List<int> FindPath(Room start, Room end, Room[,] grid)
@@ -207,7 +375,7 @@ public class PathFinder : MonoBehaviour
         return neighbors;
     }
 
-    public List<Wall> findWallsAlongPath(List<int> path, Room start, Room end, Room[,] rooms)
+    public static List<Wall> findWallsAlongPath(List<int> path, Room start, Room end, Room[,] rooms)
     {
         List<Wall> walls = new List<Wall>();
         return walls;
