@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boundary : Object
+public abstract class Boundary : Object
 {
     //currently Door and Wall hold their Width and Height
     /*private boundaryWidth;
@@ -43,5 +43,21 @@ public class Boundary : Object
     public GameObject getGameObject()
     {
         return prefab;
+    }
+
+    //unique function that sees if exactly one room is null, and then attaches the input room to sais null room (for appending a room onto a boundary)
+    public void attachRoom(Room attachingRoom) //notably does nothing if the wall has no nulls (nowhere to attach) or has both nulls (how could this even occur???)
+    {
+        bool isRoom1Null = System.Object.Equals(this.room1, null);
+        bool isRoom2Null = System.Object.Equals(this.room2, null);
+
+        if(isRoom1Null && !isRoom2Null) //the case in which room1 is null and room2 specifically isn't null
+        {
+            this.room1 = attachingRoom;
+        }
+        else if (!isRoom1Null && isRoom2Null) //the case in which room2 is null and room1 specifically isn't null
+        {
+            this.room2 = attachingRoom;
+        }
     }
 }
