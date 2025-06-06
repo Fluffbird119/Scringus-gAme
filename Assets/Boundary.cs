@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boundary : Object
+public abstract class Boundary : Object
 {
     //currently Door and Wall hold their Width and Height
     /*private boundaryWidth;
