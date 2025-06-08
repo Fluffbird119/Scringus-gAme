@@ -24,6 +24,7 @@ public class MapGenScript : MonoBehaviour
 
     public int seed = 0; //set to 0 to generate random seeds
 
+    // dictionaries in C# are silly
     public static Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); 
     public static Dictionary<Vector2, Door> doorMap = new Dictionary<Vector2, Door>();
 
@@ -32,6 +33,7 @@ public class MapGenScript : MonoBehaviour
         genSeed();
 
         drawRooms();
+        Room starterRoom = drawStarterRoom();
 
         generateWalls();
         generateDoors(starterRoom);
@@ -269,38 +271,21 @@ public class MapGenScript : MonoBehaviour
         }
     }
 
-    public void generateDoors()
+    public void generateIntitialDoors()
     {
-        Room goalRoom = rooms[0, MAP_WIDTH / 2];
-        for (int y = MAP_HEIGHT - 1; y >= 0; y--)
+        Vector2[] keyArray = wallMap.Keys.ToArray();
+        for (int i = 0; i < keyArray.Length; i++)
         {
-            for (int x = 0; x < MAP_WIDTH; x++)
+            Vector2 pos = keyArray[i];
+            float makeDoor = Random.Range(0f, 1f);
+            if (makeDoor < 0.2 
+                && pos.x != -.5f * Room.ROOM_UNIT && pos.x != MAP_WIDTH * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT
+                && pos.y != -.5f * Room.ROOM_UNIT && pos.y != MAP_HEIGHT * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT)
             {
-                Room room = rooms[y, x];
-                {
-                    List<int> path = null;
-                    if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom))
-                    {
-                        path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                    List<Wall> wallsToBeReplaced = PathFinder.ReplaceWallsAlongPath(path, room, rooms);
-
-                    if (wallsToBeReplaced.Count > 0)
-                    {
-                        foreach (Wall wall in wallsToBeReplaced)
-                        {
-                            generateDoor(wall);
-                        }
-                    }
-                }
-
+                generateDoor(keyArray[i], wallMap[keyArray[i]]);
             }
         }
-        generateDoor(goalRoom.getWalls()[(int)Room.Direction.UP]);
+
     }
 
     public void cuGenerateDoors(Room starterRoom) //overloaded, this is the simple one
@@ -330,20 +315,22 @@ public class MapGenScript : MonoBehaviour
         destroyWall(wallPos);
         bool orientation = wall.getGameObject().transform.rotation.z == 0;
         GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
+
         if (orientation)
         {
-            newDoor = Instantiate(doorPrefab, pos, Quaternion.identity);
+            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.identity);
         }
         else
         {
-            newDoor = Instantiate(doorPrefab, pos, Quaternion.AngleAxis(90, Vector3.forward));
+            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
         }
 
         string name = "door";
         newDoor.name = name;
 
-        Door door = new Door(newDoor, pos, wall.getRoom1(), wall.getRoom2());
-        doorMap[pos] = door;
+        Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
+        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
+        doorMap[doorPos] = door;
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
@@ -364,6 +351,19 @@ public class MapGenScript : MonoBehaviour
             Random.InitState(seed);
 
             Debug.Log("Seed Is: " + seed);
+        }
+    }
+
+    
+
+
+
+    private void printWallMap()
+    {
+        // thanks reddit
+        foreach (var i in wallMap)
+        {
+            Debug.Log($"Key: {i.Key}, Value: {i.Value}"); //Cu is going to alter wallmap to be a disct<pos,Boundary>
         }
     }
 }

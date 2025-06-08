@@ -123,30 +123,30 @@ public class Room : Object
         return doors;
     }
 
-    public Dictionary<int, Wall> getWalls()
+    public Dictionary<Direction, Wall> getWalls()
     {
-        Dictionary<int, Wall> walls = new Dictionary<int, Wall>();
+        Dictionary<Direction, Wall> walls = new Dictionary<Direction, Wall>();
 
         Vector2[] keyArray = MapGenScript.wallMap.Keys.ToArray();
         Vector2 up = new Vector2(this.pos.x, this.pos.y + ROOM_UNIT * 0.5f);
         if (keyArray.Contains(up))
         {
-            walls[(int)Direction.UP] = MapGenScript.wallMap[up];
+            walls[Direction.UP] = MapGenScript.wallMap[up];
         }
         Vector2 right = new Vector2(this.pos.x + ROOM_UNIT * 0.5f, this.pos.y);
         if (keyArray.Contains(right))
         {
-            walls[(int)Direction.RIGHT] = MapGenScript.wallMap[right];
+            walls[Direction.RIGHT] = MapGenScript.wallMap[right];
         }
         Vector2 down = new Vector2(this.pos.x, this.pos.y - ROOM_UNIT * 0.5f);
         if (keyArray.Contains(down))
         {
-            walls[(int)Direction.DOWN] = MapGenScript.wallMap[down];
+            walls[Direction.DOWN] = MapGenScript.wallMap[down];
         }
         Vector2 left = new Vector2(this.pos.x - ROOM_UNIT * 0.5f, this.pos.y);
         if (keyArray.Contains(left))
         {
-            walls[(int)Direction.LEFT] = MapGenScript.wallMap[left];
+            walls[Direction.LEFT] = MapGenScript.wallMap[left];
         }
         return walls;
     }
@@ -197,11 +197,5 @@ public class Room : Object
     public override int GetHashCode()
     {
         return (this.row() * 37) + (this.col()*1369);
-    }
-
-    override
-    public string ToString()
-    {
-        return "x: " + this.row() + ", " + this.col();
     }
 }
