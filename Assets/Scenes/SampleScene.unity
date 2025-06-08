@@ -222,7 +222,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 486484838}
-  moveInput: {x: 0, y: 0}
   moveSpeed: 5
 --- !u!50 &486484838
 Rigidbody2D:
@@ -295,7 +294,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 862120568}
-  - component: {fileID: 862120569}
   - component: {fileID: 862120567}
   m_Layer: 0
   m_Name: Map Generator
@@ -335,20 +333,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &862120569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 862120566}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae9853ad082ae11488332315964947b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  roomPrefab: {fileID: 6876106479762387085, guid: a2e9b66cfa1487a4aab053fd1c076697, type: 3}
-  newcolor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1465969662
 GameObject:
   m_ObjectHideFlags: 0
