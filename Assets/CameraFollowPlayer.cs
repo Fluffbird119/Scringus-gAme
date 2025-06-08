@@ -8,15 +8,17 @@ public class CameraFollowPlayer : MonoBehaviour
     public float smoothTime = 0.3F;
     Vector3 velocity = Vector3.zero;
 
+    public float distFromPlayer = 3f;
+
     void Start()
     {
-        transform.position = player.position + new Vector3(0, 0, -1.5f);
+        transform.position = player.position + new Vector3(0, 0, -distFromPlayer);
     }
 
     void Update()
     {
 
-        Vector3 targetPosition = player.TransformPoint(new Vector3(0, 0, -1.5f));
+        Vector3 targetPosition = player.TransformPoint(new Vector3(0, 0, -distFromPlayer));
 
         // Smoothly move the camera towards that target position
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
