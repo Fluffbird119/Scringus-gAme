@@ -15,6 +15,7 @@ public class Room : Object
 
     public static readonly float ROOM_UNIT = 10;
 
+
     private GameObject prefab;
     private Renderer rend;
     public int roomValue;
@@ -93,6 +94,7 @@ public class Room : Object
     {
         return (int)(MapGenScript.MAP_HEIGHT - this.pos.y / ROOM_UNIT) - 1; 
     }
+
 
     public enum Direction { UP = 1, RIGHT = 2, DOWN = 3, LEFT = 4 };
     public Dictionary<Direction, Door> GetDoors()
