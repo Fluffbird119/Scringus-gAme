@@ -34,17 +34,20 @@ public class MapGenScript : MonoBehaviour
         drawRooms();
 
         generateWalls();
+        Room starterRoom = drawStarterRoom();
         generateDoors(starterRoom);
         
         //PathFinder.collectionOfDebugWhathaveyou();
 
         //printWallMap();
+        /*
         List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
 
         foreach (int pathIndex in path)
         {
             Debug.Log(pathIndex);  
         }
+        */
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -280,7 +283,7 @@ public class MapGenScript : MonoBehaviour
                 && pos.x != -.5f * Room.ROOM_UNIT && pos.x != MAP_WIDTH * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT
                 && pos.y != -.5f * Room.ROOM_UNIT && pos.y != MAP_HEIGHT * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT)
             {
-                generateDoor(keyArray[i], wallMap[keyArray[i]]);
+                generateDoor(wallMap[keyArray[i]]);
             }
         }
 
@@ -300,7 +303,7 @@ public class MapGenScript : MonoBehaviour
         //presuming the starterroom is above the map for this (otherwise this could just search all four Directions to see which is valid), and change wall assignment below)
         Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
         starterBottomWall.attachRoom(starterRoom);
-        generateDoor(starterBottomWall.getPos(), starterBottomWall);
+        generateDoor(starterBottomWall);
     }
 
     public void generateDoors(Room starterRoom) //I expect this to be able to swap between Luke's and Cu's
@@ -316,7 +319,7 @@ public class MapGenScript : MonoBehaviour
             {
                 Room room = rooms[y, x];
                 {
-                    List<int> path = null;
+                    List<Room.Direction> path = null;
                     if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom))
                     {
                         path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
@@ -338,7 +341,7 @@ public class MapGenScript : MonoBehaviour
 
             }
         }
-        generateDoor(goalRoom.getWalls()[(int)Room.Direction.UP]);
+        generateDoor(goalRoom.getWalls()[Room.Direction.UP]);
     }
 
     public void generateDoor(Wall wall)
