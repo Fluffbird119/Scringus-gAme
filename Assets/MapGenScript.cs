@@ -35,7 +35,7 @@ public class MapGenScript : MonoBehaviour
 
         generateWalls();
         Room starterRoom = drawStarterRoom();
-        generateDoors(starterRoom);
+        generateDoors(starterRoom, false);
         
         //PathFinder.collectionOfDebugWhathaveyou();
 
@@ -306,10 +306,18 @@ public class MapGenScript : MonoBehaviour
         generateDoor(starterBottomWall);
     }
 
-    public void generateDoors(Room starterRoom) //I expect this to be able to swap between Luke's and Cu's
+    public void generateDoors(Room starterRoom, bool isUsingLukes) //I expect this to be able to swap between Luke's and Cu's
     {
-        cuGenerateDoors(starterRoom);
+        if(isUsingLukes)
+        {
+            lukeGenerateDoors();
+        }
+        else
+        {
+            cuGenerateDoors(starterRoom);
+        }
     }
+
     public void lukeGenerateDoors()
     {
         Room goalRoom = rooms[0, MAP_WIDTH / 2];
