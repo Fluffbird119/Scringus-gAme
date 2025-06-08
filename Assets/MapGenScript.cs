@@ -32,6 +32,7 @@ public class MapGenScript : MonoBehaviour
         genSeed();
 
         drawRooms();
+        Room starterRoom = drawStarterRoom();
 
         generateWalls();
         generateDoors(starterRoom);
