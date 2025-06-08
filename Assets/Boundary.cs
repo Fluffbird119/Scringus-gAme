@@ -29,10 +29,18 @@ public abstract class Boundary : Object
     {
         return this.room1;
     }
+    public void setRoom1(Room room1)
+    {
+        this.room1 = room1;
+    }
 
     public Room getRoom2()
     {
         return this.room2;
+    }
+    public void setRoom2(Room room2)
+    {
+        this.room2 = room2;
     }
 
     public Vector2 getPos()

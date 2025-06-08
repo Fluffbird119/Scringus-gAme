@@ -24,7 +24,6 @@ public class MapGenScript : MonoBehaviour
 
     public int seed = 0; //set to 0 to generate random seeds
 
-    // dictionaries in C# are silly
     public static Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); 
     public static Dictionary<Vector2, Door> doorMap = new Dictionary<Vector2, Door>();
 
@@ -33,7 +32,6 @@ public class MapGenScript : MonoBehaviour
         genSeed();
 
         drawRooms();
-        Room starterRoom = drawStarterRoom();
 
         generateWalls();
         generateDoors(starterRoom);
@@ -41,12 +39,12 @@ public class MapGenScript : MonoBehaviour
         //PathFinder.collectionOfDebugWhathaveyou();
 
         //printWallMap();
-        /*List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
+        List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
 
         foreach (int pathIndex in path)
         {
             Debug.Log(pathIndex);  
-        }*/
+        }
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -309,28 +307,60 @@ public class MapGenScript : MonoBehaviour
     {
         cuGenerateDoors(starterRoom);
     }
-
-    public void generateDoor(Vector2 wallPos, Wall wall)
+    public void lukeGenerateDoors()
     {
-        destroyWall(wallPos);
+        Room goalRoom = rooms[0, MAP_WIDTH / 2];
+        for (int y = MAP_HEIGHT - 1; y >= 0; y--)
+        {
+            for (int x = 0; x < MAP_WIDTH; x++)
+            {
+                Room room = rooms[y, x];
+                {
+                    List<int> path = null;
+                    if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom))
+                    {
+                        path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    List<Wall> wallsToBeReplaced = PathFinder.ReplaceWallsAlongPath(path, room, rooms);
+
+                    if (wallsToBeReplaced.Count > 0)
+                    {
+                        foreach (Wall wall in wallsToBeReplaced)
+                        {
+                            generateDoor(wall);
+                        }
+                    }
+                }
+
+            }
+        }
+        generateDoor(goalRoom.getWalls()[(int)Room.Direction.UP]);
+    }
+
+    public void generateDoor(Wall wall)
+    {
+        Vector2 pos = wall.getPos();
+        destroyWall(pos);
         bool orientation = wall.getGameObject().transform.rotation.z == 0;
         GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
-
         if (orientation)
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.identity);
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.identity);
         }
         else
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.AngleAxis(90, Vector3.forward));
         }
 
         string name = "door";
         newDoor.name = name;
 
-        Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
-        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
-        doorMap[doorPos] = door;
+        Door door = new Door(newDoor, pos, wall.getRoom1(), wall.getRoom2());
+        doorMap[pos] = door;
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
@@ -351,19 +381,6 @@ public class MapGenScript : MonoBehaviour
             Random.InitState(seed);
 
             Debug.Log("Seed Is: " + seed);
-        }
-    }
-
-    
-
-
-
-    private void printWallMap()
-    {
-        // thanks reddit
-        foreach (var i in wallMap)
-        {
-            Debug.Log($"Key: {i.Key}, Value: {i.Value}"); //Cu is going to alter wallmap to be a disct<pos,Boundary>
         }
     }
 }
