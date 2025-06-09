@@ -24,6 +24,9 @@ public abstract class Weapon : Item
     //the following attributes are general item features that can be handled by this abstract class
     private bool meetsPassiveReq = false; //passive will likely require a primary stat
     private bool isActiveOffCooldown = false;
+    private bool isEquipped = false;
+    private GameObject equippedWpnPrefab;
+    private bool isInLeft = false; //only for one handed weapons
 
     //the actual item class should handle positioning on the ground and knowing if an item is in hotbar or not
     //private Vector2 pos = new Vector2(); //as in position in game, particularly if unequipped and on the ground
@@ -41,6 +44,7 @@ public abstract class Weapon : Item
         this.SecondaryStatInnates = sStatInn;
         this.PrimaryStatGrowths = pStatGrw;
         this.isOneHanded = isOneHanded;
+        this.prefab = prefab; 
     }
 
     //here are abstract methods all of the inheriting items will implement (it's almost like an interface!)
@@ -58,9 +62,19 @@ public abstract class Weapon : Item
 
     
 
-    public void displayEquippedWeapon() //intended to be implemented here
+    public void createEquippedWeapon(GameObject playerGameObject) //intended to be implemented here
     {
+        equippedWpnPrefab = Instantiate(this.prefab);
+        equippedWpnPrefab.transform.SetParent(playerGameObject.transform); //player class needed to not make this a gameobject param
+    }
 
+    public void dropWeapon(GameObject playerGameObject)
+    {
+        dropItem(playerGameObject);
+        if(isEquipped)
+        {
+            Destroy(equippedWpnPrefab);
+        }
     }
 
 
