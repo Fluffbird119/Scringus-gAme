@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rb;
     Vector2 moveInput;
     public int moveSpeed = 5;
+    public float playerSpeed = 0;
 
     void Start()
     {
@@ -21,6 +22,18 @@ public class PlayerMovement : MonoBehaviour
         //moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")); // can also be written as this
 
         moveInput.Normalize(); // so diagonal movement is just as fast as up and down movement
+
+        playerSpeed = rb.velocity.x;
+        if (playerSpeed < 0 && transform.rotation == Quaternion.Euler(0, 0, 0))
+        {
+            transform.Rotate(0, 180, 0);
+            Debug.Log("Facing left");
+        }
+        if (playerSpeed > 0 && transform.rotation == Quaternion.Euler(0, -180, 0))
+        {
+            transform.Rotate(0, 180, 0);
+            Debug.Log("Facing right");
+        }
     }
 
     private void FixedUpdate()
