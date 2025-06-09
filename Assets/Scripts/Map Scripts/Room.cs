@@ -13,7 +13,7 @@ public class Room : Object
     private float roomWidth;
     private float roomHeight;
 
-    public static readonly float ROOM_UNIT = 10;
+    public static readonly float ROOM_UNIT = 20;
 
 
     private GameObject prefab;
