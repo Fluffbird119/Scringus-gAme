@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -183,7 +184,7 @@ public class PathFinder : MonoBehaviour
 
                             if(areaGpIndex1 != areaGpIndex2) //i.e. if they belong different 'groups'
                             {
-                                mapGenInstance.generateDoor(wall.getPos(), wall); //create door between 'groups' ALSO THIS IS THE ONLY LINE MAPGENINSTANCE IS USED
+                                mapGenInstance.generateDoor(wall); //create door between 'groups' ALSO THIS IS THE ONLY LINE MAPGENINSTANCE IS USED
                                 foreach(EnclosedArea encAreaInSecondaryGroup in listOfGroupedAreas[areaGpIndex2])
                                 {
                                     listOfGroupedAreas[areaGpIndex1].Add(encAreaInSecondaryGroup); //the groups are 'merged'
@@ -287,24 +288,24 @@ public class PathFinder : MonoBehaviour
         Debug.Log("room[0,0] number of walls" + roomWallList.Count);
     }
 
-    public static List<int> FindPath(Room start, Room end, Room[,] grid)
+    public static List<Room.Direction> FindPath(Room start, Room end, Room[,] grid)
     {
-        Dictionary<Room, Tuple<int, Room>> parents = new();
+        Dictionary<Room, Tuple<Room.Direction, Room>> parents = new();
         bool[,] visited = new bool[grid.GetLength(0), grid.GetLength(1)];
-        Queue<Tuple<int, Room>> queue = new();
+        Queue<Tuple<Room.Direction, Room>> queue = new();
 
-        var startPair = new Tuple<int, Room>(0, start);
+        var startPair = new Tuple<Room.Direction, Room>(0, start);
         queue.Enqueue(startPair);
         parents[start] = null;
         while (queue.Count > 0)
         {
             var pair = queue.Dequeue();
             var room = pair.Item2;
-            visited[(int)(room.getPos().y / Room.ROOM_UNIT), (int)(room.getPos().x / Room.ROOM_UNIT)] = true;
+            visited[room.row(), room.col()] = true;
 
             if (room.Equals(end)) //for some reason, start and end are equal
             {
-                return GetPath(parents, pair);
+                return ShufflePath(GetPath(parents, pair));
             }
             else
             {
@@ -324,9 +325,25 @@ public class PathFinder : MonoBehaviour
         return null;
     }
 
-    private static List<int> GetPath(Dictionary<Room, Tuple<int, Room>> parents, Tuple<int, Room> destinationPair)
+
+
+    public static List<Room.Direction> ShufflePath(List<Room.Direction> path)
     {
-        List<int> path = new() { destinationPair.Item1 };
+        int n = path.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = Random.Range(0, n + 1);
+            Room.Direction value = path[k];
+            path[k] = path[n];
+            path[n] = value;
+        }
+        return path;
+    }
+
+    private static List<Room.Direction> GetPath(Dictionary<Room, Tuple<Room.Direction, Room>> parents, Tuple<Room.Direction, Room> destinationPair)
+    {
+        List<Room.Direction> path = new() { destinationPair.Item1 };
         Room room = destinationPair.Item2;
 
         while (parents[room] != null && parents[room].Item1 != 0)
@@ -338,10 +355,10 @@ public class PathFinder : MonoBehaviour
         return path;
     }
 
-    private static List<Tuple<int, Room>> GetUnvisitedNeighbors(Room cell, Room[,] grid, bool[,] visited)
+    private static List<Tuple<Room.Direction, Room>> GetUnvisitedNeighbors(Room cell, Room[,] grid, bool[,] visited)
     {
-        List<Tuple<int, Room>> neighbors = GetNeighbors(cell, grid);
-        var unvisited = new List<Tuple<int, Room>>();
+        List<Tuple<Room.Direction, Room>> neighbors = GetNeighbors(cell, grid);
+        var unvisited = new List<Tuple<Room.Direction, Room>>();
 
         foreach (var neighbor in neighbors)
         {
@@ -354,30 +371,57 @@ public class PathFinder : MonoBehaviour
         return unvisited;
     }
 
-    private static List<Tuple<int, Room>> GetNeighbors(Room room, Room[,] grid)
+    private static List<Tuple<Room.Direction, Room>> GetNeighbors(Room room, Room[,] grid)
     {
         int row = room.row();
         int col = room.col();
-        var neighbors = new List<Tuple<int, Room>>();
+        var neighbors = new List<Tuple<Room.Direction, Room>>();
 
         if (row > 0)
-            neighbors.Add(new Tuple<int, Room>((int)Room.Direction.UP, grid[row - 1, col]));
+            neighbors.Add(new Tuple<Room.Direction, Room>(Room.Direction.UP, grid[row - 1, col]));
 
         if (row < grid.GetLength(0) - 1)
-            neighbors.Add(new Tuple<int, Room>((int)Room.Direction.DOWN, grid[row + 1, col]));
+            neighbors.Add(new Tuple<Room.Direction, Room>(Room.Direction.DOWN, grid[row + 1, col]));
 
         if (col > 0)
-            neighbors.Add(new Tuple<int, Room>((int)Room.Direction.LEFT, grid[row, col - 1]));
+            neighbors.Add(new Tuple<Room.Direction, Room>(Room.Direction.LEFT, grid[row, col - 1]));
 
         if (col < grid.GetLength(1) - 1)
-            neighbors.Add(new Tuple<int, Room>((int)Room.Direction.RIGHT, grid[row, col + 1]));
+            neighbors.Add(new Tuple<Room.Direction, Room>(Room.Direction.RIGHT, grid[row, col + 1]));
 
         return neighbors;
     }
 
-    public static List<Wall> findWallsAlongPath(List<int> path, Room start, Room end, Room[,] rooms)
+    public static List<Wall> ReplaceWallsAlongPath(List<Room.Direction> path, Room start, Room[,] rooms)
     {
         List<Wall> walls = new List<Wall>();
+        Room currRoom = start;
+        if (path != null)
+        {
+            foreach (Room.Direction direction in path)
+            {
+                if (currRoom.getWalls().ContainsKey(direction) && !areRoomsConnected(currRoom, rooms[0, MapGenScript.MAP_WIDTH / 2]))
+                {
+                    walls.Add(currRoom.getWalls()[direction]);
+                }
+                switch (direction)
+                {
+                    case Room.Direction.UP:
+                        currRoom = rooms[currRoom.row() - 1, currRoom.col()];
+                        break;
+                    case Room.Direction.RIGHT:
+                        currRoom = rooms[currRoom.row(), currRoom.col() + 1];
+                        break;
+                    case Room.Direction.DOWN:
+                        currRoom = rooms[currRoom.row() + 1, currRoom.col()];
+                        break;
+                    case Room.Direction.LEFT:
+                        currRoom = rooms[currRoom.row(), currRoom.col() - 1];
+                        break;
+
+                }
+            }
+        }
         return walls;
     }
 

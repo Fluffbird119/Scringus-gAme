@@ -24,7 +24,6 @@ public class MapGenScript : MonoBehaviour
 
     public int seed = 0; //set to 0 to generate random seeds
 
-    // dictionaries in C# are silly
     public static Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); 
     public static Dictionary<Vector2, Door> doorMap = new Dictionary<Vector2, Door>();
 
@@ -33,20 +32,24 @@ public class MapGenScript : MonoBehaviour
         genSeed();
 
         drawRooms();
-        Room starterRoom = drawStarterRoom();
 
         generateWalls();
-        generateDoors(starterRoom);
+        Room starterRoom = drawStarterRoom();
+
+
+        generateDoors(starterRoom, false);
         
         //PathFinder.collectionOfDebugWhathaveyou();
 
-        //printWallMap();
-        /*List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
+        
+        /*
+        List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
 
         foreach (int pathIndex in path)
         {
             Debug.Log(pathIndex);  
-        }*/
+        }
+        */
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -282,7 +285,7 @@ public class MapGenScript : MonoBehaviour
                 && pos.x != -.5f * Room.ROOM_UNIT && pos.x != MAP_WIDTH * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT
                 && pos.y != -.5f * Room.ROOM_UNIT && pos.y != MAP_HEIGHT * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT)
             {
-                generateDoor(keyArray[i], wallMap[keyArray[i]]);
+                generateDoor(wallMap[keyArray[i]]);
             }
         }
 
@@ -302,35 +305,78 @@ public class MapGenScript : MonoBehaviour
         //presuming the starterroom is above the map for this (otherwise this could just search all four Directions to see which is valid), and change wall assignment below)
         Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
         starterBottomWall.attachRoom(starterRoom);
-        generateDoor(starterBottomWall.getPos(), starterBottomWall);
+        generateDoor(starterBottomWall);
     }
 
-    public void generateDoors(Room starterRoom) //I expect this to be able to swap between Luke's and Cu's
+    public void generateDoors(Room starterRoom, bool isUsingLukes) //I expect this to be able to swap between Luke's and Cu's
     {
-        cuGenerateDoors(starterRoom);
-    }
-
-    public void generateDoor(Vector2 wallPos, Wall wall)
-    {
-        destroyWall(wallPos);
-        bool orientation = wall.getGameObject().transform.rotation.z == 0;
-        GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
-
-        if (orientation)
+        if(isUsingLukes)
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.identity);
+            lukeGenerateDoors(starterRoom);
         }
         else
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
+            cuGenerateDoors(starterRoom);
+        }
+    }
+
+    public void lukeGenerateDoors(Room starterRoom)
+    {
+        Room goalRoom = rooms[0, MAP_WIDTH / 2];
+        for (int y = MAP_HEIGHT - 1; y >= 0; y--)
+        {
+            for (int x = 0; x < MAP_WIDTH; x++)
+            {
+                Room room = rooms[y, x];
+                {
+                    List<Room.Direction> path = null;
+                    if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom))
+                    {
+                        path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    List<Wall> wallsToBeReplaced = PathFinder.ReplaceWallsAlongPath(path, room, rooms);
+
+                    if (wallsToBeReplaced.Count > 0)
+                    {
+                        foreach (Wall wall in wallsToBeReplaced)
+                        {
+                            generateDoor(wall);
+                        }
+                    }
+                }
+
+            }
+        }
+        Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
+        starterBottomWall.attachRoom(starterRoom);
+        generateDoor(starterBottomWall);
+        //generateDoor(goalRoom.getWalls()[Room.Direction.UP]);
+    }
+
+    public void generateDoor(Wall wall)
+    {
+        Vector2 pos = wall.getPos();
+        destroyWall(pos);
+        bool orientation = wall.getGameObject().transform.rotation.z == 0;
+        GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
+        if (orientation)
+        {
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.identity);
+        }
+        else
+        {
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.AngleAxis(90, Vector3.forward));
         }
 
         string name = "door";
         newDoor.name = name;
 
-        Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
-        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
-        doorMap[doorPos] = door;
+        Door door = new Door(newDoor, pos, wall.getRoom1(), wall.getRoom2());
+        doorMap[pos] = door;
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
@@ -351,19 +397,6 @@ public class MapGenScript : MonoBehaviour
             Random.InitState(seed);
 
             Debug.Log("Seed Is: " + seed);
-        }
-    }
-
-    
-
-
-
-    private void printWallMap()
-    {
-        // thanks reddit
-        foreach (var i in wallMap)
-        {
-            Debug.Log($"Key: {i.Key}, Value: {i.Value}"); //Cu is going to alter wallmap to be a disct<pos,Boundary>
         }
     }
 }

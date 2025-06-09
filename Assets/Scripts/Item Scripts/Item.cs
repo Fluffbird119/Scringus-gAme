@@ -34,6 +34,11 @@ public abstract class Item : Object // maybe should extend entity, ALSO Consumab
         
     }
 
+    public void dropItem()
+    {
+        //Needs to be implemented (will prolly be called by something in player)
+    }
+
     public enum ItemType
     {
         UTILITY, //also called consumable by this code,

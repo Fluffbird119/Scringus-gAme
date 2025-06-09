@@ -13,6 +13,8 @@ public class EnclosedArea : Object
     private bool known = false;
     private EnclosedArea prevEncArea = null;
 
+    private bool visited = false;
+
     public EnclosedArea(List<Room> rooms)
     {
         this.rooms = rooms;
@@ -115,6 +117,10 @@ public class EnclosedArea : Object
     public void setPreviousArea(EnclosedArea prevEncArea)
     {
         this.prevEncArea = prevEncArea;
+    }
+    public void setVisited(bool visited)
+    {
+        this.visited = visited;
     }
     public void makeKnown()
     {

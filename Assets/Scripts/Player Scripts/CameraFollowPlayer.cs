@@ -8,7 +8,7 @@ public class CameraFollowPlayer : MonoBehaviour
     public float smoothTime = 0.3F;
     Vector3 velocity = Vector3.zero;
 
-    public float distFromPlayer = 3f;
+    public float distFromPlayer = 5f;
 
     void Start()
     {
