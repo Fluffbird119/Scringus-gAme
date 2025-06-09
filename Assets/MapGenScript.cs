@@ -35,6 +35,8 @@ public class MapGenScript : MonoBehaviour
 
         generateWalls();
         Room starterRoom = drawStarterRoom();
+
+
         generateDoors(starterRoom, false);
         
         //PathFinder.collectionOfDebugWhathaveyou();
@@ -310,7 +312,7 @@ public class MapGenScript : MonoBehaviour
     {
         if(isUsingLukes)
         {
-            lukeGenerateDoors();
+            lukeGenerateDoors(starterRoom);
         }
         else
         {
@@ -318,7 +320,7 @@ public class MapGenScript : MonoBehaviour
         }
     }
 
-    public void lukeGenerateDoors()
+    public void lukeGenerateDoors(Room starterRoom)
     {
         Room goalRoom = rooms[0, MAP_WIDTH / 2];
         for (int y = MAP_HEIGHT - 1; y >= 0; y--)
@@ -349,7 +351,10 @@ public class MapGenScript : MonoBehaviour
 
             }
         }
-        generateDoor(goalRoom.getWalls()[Room.Direction.UP]);
+        Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
+        starterBottomWall.attachRoom(starterRoom);
+        generateDoor(starterBottomWall);
+        //generateDoor(goalRoom.getWalls()[Room.Direction.UP]);
     }
 
     public void generateDoor(Wall wall)

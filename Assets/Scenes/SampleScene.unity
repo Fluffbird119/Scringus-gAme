@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 480339005}
   - component: {fileID: 480339004}
   - component: {fileID: 480339003}
+  - component: {fileID: 480339006}
   - component: {fileID: 480339002}
   m_Layer: 0
   m_Name: Circle
@@ -242,7 +243,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1383521633
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 0.18195976, g: 0.6465378, b: 0.8207547, a: 1}
@@ -270,6 +271,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &480339006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480339000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ad22ff6580b7564d8d06f0281048068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 480339002}
+  moveSpeed: 5
 --- !u!1 &862120566
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,7 +393,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 100
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -425,7 +440,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 480339005}
   smoothTime: 0.1
-  distFromPlayer: 4
+  distFromPlayer: 3
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
