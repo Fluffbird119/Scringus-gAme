@@ -9,7 +9,6 @@ public abstract class Weapon : Item
     //this will be extended by classes like Projectile, Shield, Melee, etc, each of which will (eventually) have sealed extensions for their types
 
     //the following attributes are part of the weapon construction, and will rarely update within a game
-    private GameObject prefab;
 
     private Dictionary<Weapon.PrimaryStats, float> PrimaryStatInnates = new Dictionary<Weapon.PrimaryStats, float>();
     private Dictionary<Weapon.SecondaryStats, float> SecondaryStatInnates = new Dictionary<Weapon.SecondaryStats, float>();
@@ -43,8 +42,6 @@ public abstract class Weapon : Item
         this.isOneHanded = isOneHanded;
     }
 
-    public Weapon(GameObject prefab, GameObject playerObject) : base (prefab, playerObject) { }
-
     //here are abstract methods all of the inheriting items will implement (it's almost like an interface!)
     public abstract void wpnAction(); //basically the attack, but items like shields 'action may just be 'block'
     public abstract void wpnPassive(); // this maybe shouldn't be a function? I don't know what item passives will be like
@@ -76,11 +73,11 @@ public abstract class Weapon : Item
     public enum PrimaryStats //also these don't need to be enums called by dictionaries, I just don't know how many there will be right now, 5???
     {
         //items in general will prolly call PrimaryStats via an enum or something else defined in the abstract player class (so this is temporary prolly)
-        KINDNESS,         
-        FRIENDSHIP,
-        BLOODLUST,          
-        SYMPATHY,           //yes right now my placeholders are not actual stats (and they prolly don't need to be all caps) FIXXXX
-        UNDERSTANDING
+        STR,         
+        DEX,
+        CON,          
+        INT,           
+        WIS
     }
 
     //Secondary stats will actually be applied and typically just factor inPrimaryStats (and Weapon.SecondaryStatInnates)
@@ -96,8 +93,8 @@ public abstract class Weapon : Item
         ATTACK_SPD,
         LUCK,            //i.e. something that may affect drop rate of weapons, or increase gold gain
         MAX_HEALTH,
-        MAX_RESOURCE,    //like mana
-        RESOURCE_REGEN,
+        MAX_MANA,    //like mana
+        MANA_REGEN,
 
         //RESISTANCES, note that Secondary stats may incorporate other secondary stats! (bc MAGIC and PHYS res will incorporate gen res)
         GEN_RES,
@@ -119,7 +116,7 @@ public abstract class Weapon : Item
         CRIT_DMG, //as a percent of actual dmg
         DODGE_CHANCE,
         LIFE_STEAL, //obviously doesn't mean anything rn, but 
-        COOLDOWN_REDUC
+        COOLDOWN_REDUCE
     }
     //note that ON_HIT_EFFECTS, ON_KILL_EFFECTS, and ON_[NAME TRIGGER HERE]_EFFECTS will prolly be handled in part by scripts
         //and won't be incorporated into scalings (crit is not treated as an on hit effect)

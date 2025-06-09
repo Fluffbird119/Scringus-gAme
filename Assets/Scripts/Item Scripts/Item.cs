@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Item : Object // maybe should extend entity, ALSO Consumable and Weapon whould inherit from this
+public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO Consumable and Weapon whould inherit from this
 {
     //details to be passed into constructors
     private GameObject prefab;
@@ -26,11 +26,6 @@ public abstract class Item : Object // maybe should extend entity, ALSO Consumab
         this.itemName = itemName;
     }
 
-    public Item(GameObject prefab, GameObject playerObject)
-    {
-        this.prefab = prefab;
-        this.playerObject = playerObject;
-    }
     public void displayItemOnGround()
     {
         //like how the item shows up on the ground (when hovered, it should eventually have a description, but for minimal product that is not needed

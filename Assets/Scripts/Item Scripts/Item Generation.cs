@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class ItemGeneration : MonoBehaviour
 {
-    public List<GameObject> Items = new List<GameObject>();
-    // Start is called before the first frame update
+    public GameObject basicSwordPrefab;
 
-
+    public BasicSword generateBasicSword(GameObject player)
+    {
+        BasicSword newBasicSword = new BasicSword(basicSwordPrefab, player);
+        Instantiate(newBasicSword, player.transform.position, player.transform.rotation);
+        return newBasicSword;
+    }
 }

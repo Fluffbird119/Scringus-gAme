@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        ItemGeneration itemGenerator = new ItemGeneration();
+        itemGenerator.generateBasicSword(player);
     }
     public void setEquippedItem(Item equippedItem)
     {
