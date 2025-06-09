@@ -5,9 +5,9 @@ using UnityEngine;
 public abstract class MeleeWpn : Weapon
 {
     
-    public MeleeWpn(GameObject prefab, Dictionary<Weapon.PrimaryStats, float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
-                   Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, string itemName) : base (prefab, pStatInn, sStatInn,
-                   pStatGrw, isOneHanded,Item.ItemType.MELEE_WPN, itemName)
+    public MeleeWpn(Dictionary<Weapon.PrimaryStats, float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
+                    Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, string pathToSprite) : base (pStatInn, 
+                    sStatInn, pStatGrw, isOneHanded, Item.ItemType.MELEE_WPN, pathToSprite)
     {
         //note that this goofy constructor passes virtually everything except that it innately can supply itemType
     }

@@ -9,7 +9,6 @@ public abstract class Weapon : Item
     //this will be extended by classes like Projectile, Shield, Melee, etc, each of which will (eventually) have sealed extensions for their types
 
     //the following attributes are part of the weapon construction, and will rarely update within a game
-    private GameObject prefab;
 
     private Dictionary<Weapon.PrimaryStats, float> PrimaryStatInnates = new Dictionary<Weapon.PrimaryStats, float>();
     private Dictionary<Weapon.SecondaryStats, float> SecondaryStatInnates = new Dictionary<Weapon.SecondaryStats, float>();
@@ -36,20 +35,19 @@ public abstract class Weapon : Item
     //the individual wepon types should handle the rendering/sprites
 
     //as an abstract class, its constructor will only be called by its inheriting classes, which is why it is so long
-    public Weapon(GameObject prefab, Dictionary<Weapon.PrimaryStats,float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
-                   Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, Item.ItemType itemType, 
-                   string itemName) : base (prefab, itemType, itemName)
+    public Weapon(Dictionary<Weapon.PrimaryStats, float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
+                  Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, Item.ItemType itemType, 
+                  string pathToSprite) : base (itemType, pathToSprite)
     {
         this.PrimaryStatInnates = pStatInn;
         this.SecondaryStatInnates = sStatInn;
         this.PrimaryStatGrowths = pStatGrw;
         this.isOneHanded = isOneHanded;
-        this.prefab = prefab; 
     }
 
     //here are abstract methods all of the inheriting items will implement (it's almost like an interface!)
     public abstract void wpnAction(); //basically the attack, but items like shields 'action may just be 'block'
-    public abstract void wpnActiveAbility(); //the active ability of the weapon
+    public abstract void wpnActiveAbility(); //the active ability of the weapon*** OR IF DUAL WEILDING, THE SECONDARY wpnAction
     public abstract void wpnPassiveAbility(); // this maybe shouldn't be a function? I don't know what item passives will be like
     //note that the passive actually functions when a given wepon is in an inventory.
 
@@ -64,7 +62,7 @@ public abstract class Weapon : Item
 
     public void createEquippedWeapon(GameObject playerGameObject) //intended to be implemented here
     {
-        equippedWpnPrefab = Instantiate(this.prefab);
+        equippedWpnPrefab = Instantiate(this.gameObject);
         equippedWpnPrefab.transform.SetParent(playerGameObject.transform); //player class needed to not make this a gameobject param
     }
 
