@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3338275478133394306}
   - component: {fileID: 7763263317611096744}
-  - component: {fileID: -8384983635082803784}
+  - component: {fileID: 6133705351878072931}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &-8384983635082803784
+--- !u!61 &6133705351878072931
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

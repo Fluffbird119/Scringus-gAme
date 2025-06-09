@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5473863776972616980}
   - component: {fileID: 1988451406514323154}
-  - component: {fileID: 7217663638332868014}
+  - component: {fileID: 3845516287345684833}
   m_Layer: 0
   m_Name: Bottom
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &7217663638332868014
+--- !u!61 &3845516287345684833
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,7 +140,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1406544134904054282}
   - component: {fileID: 4667161633688201681}
-  - component: {fileID: 1520716327443584722}
+  - component: {fileID: 8094069241661671045}
   m_Layer: 0
   m_Name: Top
   m_TagString: Untagged
@@ -215,7 +215,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &1520716327443584722
+--- !u!61 &8094069241661671045
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

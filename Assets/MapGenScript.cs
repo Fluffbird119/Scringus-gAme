@@ -39,7 +39,7 @@ public class MapGenScript : MonoBehaviour
         
         //PathFinder.collectionOfDebugWhathaveyou();
 
-        //printWallMap();
+        
         /*
         List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
 

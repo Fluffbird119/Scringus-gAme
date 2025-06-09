@@ -297,7 +297,6 @@ public class PathFinder : MonoBehaviour
         var startPair = new Tuple<Room.Direction, Room>(0, start);
         queue.Enqueue(startPair);
         parents[start] = null;
-        int test = 0;
         while (queue.Count > 0)
         {
             var pair = queue.Dequeue();
@@ -313,7 +312,6 @@ public class PathFinder : MonoBehaviour
                 var neighbors = GetUnvisitedNeighbors(room, grid, visited);
                 foreach (var neighbor in neighbors)
                 {
-                    test++;
                     var neighborRoom = neighbor.Item2;
                     if (!parents.ContainsKey(neighborRoom)) 
                     {
@@ -323,7 +321,7 @@ public class PathFinder : MonoBehaviour
                 }
             }
         }
-        Debug.Log(test);
+
         return null;
     }
 
