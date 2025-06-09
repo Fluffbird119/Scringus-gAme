@@ -33,9 +33,9 @@ public abstract class Weapon : Item
     //the individual wepon types should handle the rendering/sprites
 
     //as an abstract class, its constructor will only be called by its inheriting classes, which is why it is so long
-    public Weapon(GameObject prefab, Dictionary<Weapon.PrimaryStats,float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
+    public Weapon(GameObject prefab, GameObject playerObject, Dictionary<Weapon.PrimaryStats,float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
                    Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, Item.ItemType itemType, 
-                   string itemName) : base (prefab, itemType, itemName)
+                   string itemName) : base (prefab, playerObject, itemType, itemName)
     {
         this.PrimaryStatInnates = pStatInn;
         this.SecondaryStatInnates = sStatInn;
@@ -43,14 +43,14 @@ public abstract class Weapon : Item
         this.isOneHanded = isOneHanded;
     }
 
+    public Weapon(GameObject prefab, GameObject playerObject) : base (prefab, playerObject) { }
+
     //here are abstract methods all of the inheriting items will implement (it's almost like an interface!)
     public abstract void wpnAction(); //basically the attack, but items like shields 'action may just be 'block'
-    public abstract void wpnActiveAbility(); //the active ability of the weapon
-    public abstract void wpnPassiveAbility(); // this maybe shouldn't be a function? I don't know what item passives will be like
+    public abstract void wpnPassive(); // this maybe shouldn't be a function? I don't know what item passives will be like
     //note that the passive actually functions when a given wepon is in an inventory.
 
     public abstract string wpnActionDescription();
-    public abstract string wpnActiveDescription();
     public abstract string wpnPassiveDescription(); //includes stat requirement
 
 

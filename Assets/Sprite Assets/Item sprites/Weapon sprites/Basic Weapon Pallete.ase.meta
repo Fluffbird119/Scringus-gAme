@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 244540d2ad0c070489ada318a24b93dc
+guid: f94fd93d7694c7e4f9514e98f1f8ddc4
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638849868736689839
+  platformSettingsDirtyTick: 0
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,18 +122,18 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Halberd_Sprite
+  - name: Basic Weapon Pallete
     originalName: 
-    pivot: {x: 0.55172414, y: -0.06666667}
+    pivot: {x: 0.7777778, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 29
-      height: 30
-    spriteID: c6515c185c617cb43aad5cd890835562
+      width: 9
+      height: 1
+    spriteID: 713c71552b9f014478df1e34e648653b
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -141,30 +141,30 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 4}
+    uvTransform: {x: 3, y: 4}
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 2212540808
+      value0: 3894835369
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Halberd_Sprite
+    name: Basic Weapon Pallete
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Halberd_Sprite
+    - name: Basic Weapon Pallete
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
         x: 0
-        y: 2
-        width: 29
-        height: 30
-      spriteId: c6515c185c617cb43aad5cd890835562
+        y: 0
+        width: 16
+        height: 1
+      spriteId: 713c71552b9f014478df1e34e648653b
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -180,32 +180,8 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
-  - name: DefaultTexturePlatform
-    overridden: 0
-    ignorePlatformSupport: 0
-    maxTextureSize: 16384
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    androidETC2FallbackOverride: 0
-  - name: Standalone
-    overridden: 0
-    ignorePlatformSupport: 0
-    maxTextureSize: 16384
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    androidETC2FallbackOverride: 0
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 32, y: 32}
-  previousTextureSize: {x: 64, y: 64}
+  canvasSize: {x: 16, y: 1}
+  previousTextureSize: {x: 32, y: 16}

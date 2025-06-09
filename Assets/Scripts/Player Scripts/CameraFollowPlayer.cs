@@ -18,12 +18,12 @@ public class CameraFollowPlayer : MonoBehaviour
     void Update()
     {
 
-        Vector3 targetPosition = player.TransformPoint(new Vector3(0, 0, -distFromPlayer));
+        //Vector3 targetPosition = player.TransformPoint(new Vector3(0, 0, -distFromPlayer));
 
         // Smoothly move the camera towards that target position
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+        //transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
 
 
-        //transform.position = player.transform.position + new Vector3(0, 0, -1.5f);
+        transform.position = player.transform.position + new Vector3(0, 0, -distFromPlayer);
     }
 }
