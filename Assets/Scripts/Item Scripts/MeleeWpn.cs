@@ -12,14 +12,14 @@ public abstract class MeleeWpn : Weapon
         //note that this goofy constructor passes virtually everything except that it innately can supply itemType
     }
 
-    private void swingAnimation()
+    private void swingAnimation(GameObject spriteToSwing) //the GameObject clone that is actively rendering on the player should go here
     {
-        //needs to be coded (to be used by inheriting members)
+        throw new System.NotImplementedException();
     }
 
-    private void joustAnimation()
+    private void joustAnimation(GameObject spriteToJoust) //the GameObject clone that is actively rendering on the player should go here)
     {
-        //needs to be coded (to be used by inheriting members)
+        throw new System.NotImplementedException();
     }
 
 
