@@ -22,11 +22,11 @@ public sealed class Halberd : MeleeWpn
     {
         Debug.Log("Halberd performed wpnAction...");
     }
-    public override void wpnActiveAbility() //the active ability of the weapon**** OR IF DUAL WEILDING, THE SECONDARY wpnAction
+    public override void wpnAltAction() //the active ability of the weapon**** OR IF DUAL WEILDING, THE SECONDARY wpnAction
     {
         Debug.Log("Halberd performed wpnActiveAbility...");
     }
-    public override void wpnPassiveAbility()
+    public override void wpnPassive()
     {
         Debug.Log("Halberd performed wpnPassiveAbility (yeah I know it should be 'performed,' fool)...");
     }// this maybe shouldn't be a function? I don't know what item passives will be like
@@ -37,7 +37,7 @@ public sealed class Halberd : MeleeWpn
         Debug.Log("Halberd performed wpnActionDescription????");
         return "";
     }
-    public override string wpnActiveDescription()
+    public override string wpnAltActionDescription()
     {
         Debug.Log("Halberd performed wpnActiveDescription????");
         return "";

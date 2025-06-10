@@ -47,11 +47,13 @@ public abstract class Weapon : Item
 
     //here are abstract methods all of the inheriting items will implement (it's almost like an interface!)
     public abstract void wpnAction(); //basically the attack, but items like shields 'action may just be 'block'
-    public abstract void wpnActiveAbility(); //the active ability of the weapon*** OR IF DUAL WEILDING, THE SECONDARY wpnAction
-    public abstract void wpnPassiveAbility(); // this maybe shouldn't be a function? I don't know what item passives will be like
+    public abstract void wpnAltAction(); //the active ability of the weapon*** OR IF DUAL WEILDING, THE SECONDARY wpnAction
+    public abstract void wpnPassive(); // this maybe shouldn't be a function? I don't know what item passives will be like
     //note that the passive actually functions when a given weapon is in an inventory.
 
     public abstract string wpnActionDescription();
+    public abstract string wpnAltActionDescription();
+
     public abstract string wpnPassiveDescription(); //includes stat requirement
 
 
