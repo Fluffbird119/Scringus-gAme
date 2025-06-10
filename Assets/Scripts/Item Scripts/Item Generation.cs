@@ -8,8 +8,8 @@ public class ItemGeneration : MonoBehaviour
 
     public BasicSword generateBasicSword(GameObject player)
     {
-        BasicSword newBasicSword = new BasicSword(basicSwordPrefab, player);
-        Instantiate(newBasicSword, player.transform.position, player.transform.rotation);
-        return newBasicSword;
+        //BasicSword newBasicSword = new BasicSword(basicSwordPrefab, player);
+        //Instantiate(newBasicSword, player.transform.position, player.transform.rotation);
+        return null;//newBasicSword;
     }
 }

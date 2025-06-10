@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     {
         setEquippedItem(newItem);
 
-        equippedItem.getPrefab().transform.SetParent(transform);
+        //equippedItem.getPrefab().transform.SetParent(transform);
     }
 
 
