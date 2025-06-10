@@ -20,27 +20,36 @@ public class MapGenScript : MonoBehaviour
 
     public int[,] roomMap = new int[MAP_WIDTH,MAP_HEIGHT];
 
-    public Room[,] rooms = new Room[MAP_WIDTH,MAP_HEIGHT];
+    public static Room[,] rooms = new Room[MAP_WIDTH,MAP_HEIGHT];
 
     public int seed = 0; //set to 0 to generate random seeds
 
-    // dictionaries in C# are silly
-    private Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); //altered to <Vector2, Wall>
+    public static Dictionary<Vector2, Wall> wallMap = new Dictionary<Vector2, Wall>(); 
+    public static Dictionary<Vector2, Door> doorMap = new Dictionary<Vector2, Door>();
 
     void Start()
     {
         genSeed();
 
         drawRooms();
-        Room starterRoom = drawStarterRoom();
 
         generateWalls();
-        generateIntitialDoors();
-        generateDoors(starterRoom);
+        Room starterRoom = drawStarterRoom();
 
-        collectionOfDebugWhathaveyou();
 
-        //printWallMap();
+        generateDoors(starterRoom, false);
+        
+        //PathFinder.collectionOfDebugWhathaveyou();
+
+        
+        /*
+        List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 
+
+        foreach (int pathIndex in path)
+        {
+            Debug.Log(pathIndex);  
+        }
+        */
     }
 
     //  Generates a list with the size map width by map height of random colors to make each room
@@ -172,6 +181,9 @@ public class MapGenScript : MonoBehaviour
         generateWall((MAP_WIDTH / 2 + 1 - 0.5f) * Room.ROOM_UNIT, Room.ROOM_UNIT * (MAP_HEIGHT), starterRoom, null,
             true, "Right Boundary at y = " + (MAP_HEIGHT).ToString(), true);
 
+        EnclosedArea starterEnclosedArea = new EnclosedArea(starterRoom);
+        starterRoom.setEnclosedArea(starterEnclosedArea);
+        
         return starterRoom;
     }
 
@@ -273,44 +285,98 @@ public class MapGenScript : MonoBehaviour
                 && pos.x != -.5f * Room.ROOM_UNIT && pos.x != MAP_WIDTH * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT
                 && pos.y != -.5f * Room.ROOM_UNIT && pos.y != MAP_HEIGHT * Room.ROOM_UNIT - 0.5f * Room.ROOM_UNIT)
             {
-                generateDoor(keyArray[i], wallMap[keyArray[i]]);
+                generateDoor(wallMap[keyArray[i]]);
             }
         }
 
     }
 
-    public void generateDoors(Room starterRoom)
+    public void cuGenerateDoors(Room starterRoom) //overloaded, this is the simple one
     {
-        /*
-        foreach(Room room in rooms)
+        cuGenerateDoors(starterRoom, true);
+    }
+    public void cuGenerateDoors(Room starterRoom, bool usingInitialDoors) // overloaded, this should hold all the extra booleans for choices
+    {
+        if(usingInitialDoors)
         {
-            if (!areRoomsConnected(starterRoom, room)) 
-            {
-
-            }
-        }*/
+            generateIntitialDoors(); //it works both with and without initial doors (with has a chance to be less sparse)
+        }
+        PathFinder.allAccessAlgorithm(this);
+        //presuming the starterroom is above the map for this (otherwise this could just search all four Directions to see which is valid), and change wall assignment below)
+        Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
+        starterBottomWall.attachRoom(starterRoom);
+        generateDoor(starterBottomWall);
     }
 
-    public void generateDoor(Vector2 wallPos, Wall wall)
+    public void generateDoors(Room starterRoom, bool isUsingLukes) //I expect this to be able to swap between Luke's and Cu's
     {
-        destroyWall(wallPos);
-        bool orientation = wall.getGameObject().transform.rotation.z == 0;
-        GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
-
-        if (orientation)
+        if(isUsingLukes)
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.identity);
+            lukeGenerateDoors(starterRoom);
         }
         else
         {
-            newDoor = Instantiate(doorPrefab, wallPos, Quaternion.AngleAxis(90, Vector3.forward));
+            cuGenerateDoors(starterRoom);
+        }
+    }
+
+    public void lukeGenerateDoors(Room starterRoom)
+    {
+        Room goalRoom = rooms[0, MAP_WIDTH / 2];
+        for (int y = MAP_HEIGHT - 1; y >= 0; y--)
+        {
+            for (int x = 0; x < MAP_WIDTH; x++)
+            {
+                Room room = rooms[y, x];
+                {
+                    List<Room.Direction> path = null;
+                    if (!room.Equals(goalRoom) && !PathFinder.areRoomsConnected(room, goalRoom))
+                    {
+                        path = PathFinder.FindPath(room, rooms[0, MAP_WIDTH / 2], rooms);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    List<Wall> wallsToBeReplaced = PathFinder.ReplaceWallsAlongPath(path, room, rooms);
+
+                    if (wallsToBeReplaced.Count > 0)
+                    {
+                        foreach (Wall wall in wallsToBeReplaced)
+                        {
+                            generateDoor(wall);
+                        }
+                    }
+                }
+
+            }
+        }
+        Wall starterBottomWall = starterRoom.getWalls()[Room.Direction.DOWN];
+        starterBottomWall.attachRoom(starterRoom);
+        generateDoor(starterBottomWall);
+        //generateDoor(goalRoom.getWalls()[Room.Direction.UP]);
+    }
+
+    public void generateDoor(Wall wall)
+    {
+        Vector2 pos = wall.getPos();
+        destroyWall(pos);
+        bool orientation = wall.getGameObject().transform.rotation.z == 0;
+        GameObject newDoor; // instead of continually editiing one prefab instead just make a clone in this loop and use that
+        if (orientation)
+        {
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.identity);
+        }
+        else
+        {
+            newDoor = Instantiate(doorPrefab, pos, Quaternion.AngleAxis(90, Vector3.forward));
         }
 
         string name = "door";
         newDoor.name = name;
 
-        Vector2 doorPos = new Vector2(wallPos.x, wallPos.y);
-        Door door = new Door(newDoor, doorPos, wall.getRoom1(), wall.getRoom2());
+        Door door = new Door(newDoor, pos, wall.getRoom1(), wall.getRoom2());
+        doorMap[pos] = door;
         wall.getRoom1().getEnclosedArea().addBoundary(door); 
         wall.getRoom2().getEnclosedArea().addBoundary(door); 
     }
@@ -331,88 +397,6 @@ public class MapGenScript : MonoBehaviour
             Random.InitState(seed);
 
             Debug.Log("Seed Is: " + seed);
-        }
-    }
-    //takes any 2 rooms and sees if they are connected by some path
-    public bool areRoomsConnected(Room roomA, Room roomB)
-    {
-        spanningTree(roomA); //changes all 'known' and 'previousArea' values to reflect paths from roomA
-        return roomB.getEnclosedArea().isKnown();
-        //Enclosed areas currently have no toString method or really any designation, but this 'spanningTree can very easily generate the path backwards
-    }
-    private void spanningTree(Room initRoom) //all this does is establish the proper 'known' and 'previousArea' values
-    {
-        foreach(Room room in rooms)
-        {
-            room.getEnclosedArea().clearVertexInfo(); //this wipes the vertex info for everything immediately
-        }
-        EnclosedArea initEncArea = initRoom.getEnclosedArea();
-        //List<EnclosedArea> foundEnclosedAreas = new List<EnclosedArea>(); //this list tells me which enclosed areas I have seen
-        Queue<EnclosedArea> queue = new Queue<EnclosedArea>();
-        queue.Enqueue(initEncArea);
-        while (queue.Count > 0)
-        {
-            EnclosedArea currentEncArea = queue.Dequeue();
-            currentEncArea.makeKnown();
-            foreach(Boundary edge in currentEncArea.getTravBoundList())
-            {
-                EnclosedArea debugOption1 = edge.getRoom1().getEnclosedArea(); //the next several lines literally just choose the side of the boundary
-                EnclosedArea debugOption2 = edge.getRoom2().getEnclosedArea(); //that isn't the currrentEncArea, but due to a whole lot of debugging, 
-                EnclosedArea neighbour = null;                                 //I ultimately deleted the fn that did this and left the debug that works here.
-                if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption1))//I'll prolly optimise it at some point if needed -[Cu]
-                {
-                    neighbour = debugOption2;
-                }
-                else if (EnclosedArea.haveBeenUnioned(currentEncArea, debugOption2))
-                {
-                    neighbour = debugOption1;
-                }                                                              //this is the last line of the debug that I should prolly alter.
-
-                if (neighbour.isKnown() == false)
-                {
-                    if(neighbour.previousArea() == null)
-                    {
-                        neighbour.setPreviousArea(currentEncArea);
-                        queue.Enqueue(neighbour);
-                    }
-                }
-            }
-        }
-    }
-
-
-    private void collectionOfDebugWhathaveyou()
-    {
-        int initX = MAP_WIDTH/2;
-        int initY = MAP_HEIGHT/2;
-        Debug.Log(areRoomsConnected(rooms[initY, initX], rooms[0, 0]) + " what");
-        for (int currY = 0; currY < MAP_HEIGHT; currY++)
-        {
-            for (int currX = 0; currX < MAP_WIDTH; currX++)
-            {
-                //Debug.Log("is room[" + initY + ", " + initX + "] and room[" + currY + ", " + currX + "] conected:" + 
-                //                  areRoomsConnected(rooms[initY, initX], rooms[currY, currX]));
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                //EnclosedArea EA = new EnclosedArea(rooms[currY, currX]);
-
-                //rooms[currY, currX].setEnclosedArea(EA);
-                //Debug.Log("room[" + currY + ", " + currX + "] has enclosed Area: " + rooms[currY, currX].getEnclosedArea());
-                Debug.Log("plus, room at ["+currY+", "+currX+"]: "+ rooms[currY, currX].getEnclosedArea().isKnown());
-            }
-        }
-        
-
-
-    }
-
-
-
-    private void printWallMap()
-    {
-        // thanks reddit
-        foreach (var i in wallMap)
-        {
-            Debug.Log($"Key: {i.Key}, Value: {i.Value}"); //Cu is going to alter wallmap to be a disct<pos,Boundary>
         }
     }
 }

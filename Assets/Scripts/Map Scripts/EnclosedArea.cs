@@ -13,6 +13,8 @@ public class EnclosedArea : Object
     private bool known = false;
     private EnclosedArea prevEncArea = null;
 
+    private bool visited = false;
+
     public EnclosedArea(List<Room> rooms)
     {
         this.rooms = rooms;
@@ -74,6 +76,27 @@ public class EnclosedArea : Object
     {
         return encArea1.rooms[0].getGameObject() == encArea2.rooms[0].getGameObject();
     }
+    public override bool Equals(object obj)
+    {
+        if (obj == null || !(obj is EnclosedArea))
+        {
+            return false;
+        }
+        else
+        {
+            EnclosedArea otherEncArea = obj as EnclosedArea;
+            return haveBeenUnioned(this, otherEncArea);
+        }
+    }
+
+    public Room getIdentityRoom()
+    {
+        return rooms[0];
+    }
+    public override int GetHashCode()
+    {
+        return this.rooms[0].getGameObject().GetHashCode();
+    }
 
 
 
@@ -95,10 +118,18 @@ public class EnclosedArea : Object
     {
         this.prevEncArea = prevEncArea;
     }
+    public void setVisited(bool visited)
+    {
+        this.visited = visited;
+    }
     public void makeKnown()
     {
         this.known = true;
     }
 
+    public List<Room> getRooms()
+    {
+        return rooms;
+    }
 
 }
