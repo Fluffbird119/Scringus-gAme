@@ -6,7 +6,6 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
 {
     //details to be passed into constructors
     private GameObject prefab;
-    private GameObject playerObject;
     public Item.ItemType itemType { get; } //non-weapon items are probably going to be called consumable or utility
     private string itemName; //as in name of item if looked at while on ground or in menu
 
@@ -18,10 +17,9 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
     //do prefabs innately have sprites attached? Because if so, displaying an item in the hotbar and on the ground can be virtually the same
     //(except w/regard to location on character screen)
 
-    public Item(GameObject prefab, GameObject playerObject, Item.ItemType itemType, string itemName)
+    public Item(GameObject prefab, Item.ItemType itemType, string itemName)
     {
         this.prefab = prefab;
-        this.playerObject = playerObject;
         this.itemType = itemType;
         this.itemName = itemName;
     }

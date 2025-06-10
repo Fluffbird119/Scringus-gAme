@@ -6,10 +6,15 @@ public class ItemGeneration : MonoBehaviour
 {
     public GameObject basicSwordPrefab;
 
-    public BasicSword generateBasicSword(GameObject player)
+    public BasicSword generateBasicSword(Vector3 pos, Quaternion rotation)
     {
-        BasicSword newBasicSword = new BasicSword(basicSwordPrefab, player);
-        Instantiate(newBasicSword, player.transform.position, player.transform.rotation);
+        BasicSword newBasicSword = new BasicSword(basicSwordPrefab);
+        Instantiate(newBasicSword, 
+            pos, 
+            Quaternion.Euler(
+                rotation.x, 
+                rotation.y, 
+                rotation.z));
         return newBasicSword;
     }
 }

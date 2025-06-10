@@ -32,9 +32,9 @@ public abstract class Weapon : Item
     //the individual wepon types should handle the rendering/sprites
 
     //as an abstract class, its constructor will only be called by its inheriting classes, which is why it is so long
-    public Weapon(GameObject prefab, GameObject playerObject, Dictionary<Weapon.PrimaryStats,float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
+    public Weapon(GameObject prefab, Dictionary<Weapon.PrimaryStats,float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
                    Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, Item.ItemType itemType, 
-                   string itemName) : base (prefab, playerObject, itemType, itemName)
+                   string itemName) : base (prefab, itemType, itemName)
     {
         this.PrimaryStatInnates = pStatInn;
         this.SecondaryStatInnates = sStatInn;

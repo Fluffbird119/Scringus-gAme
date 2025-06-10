@@ -45,7 +45,7 @@ public class BasicSword : Weapon
     private static bool isOneHanded = true;
     private static Item.ItemType itemType = ItemType.MELEE_WPN;
     private static string itemName = "Basic Sword";
-    public BasicSword(GameObject prefab, GameObject playerObject) : base(prefab, playerObject, requirements, secondaryStatModifiers, 
+    public BasicSword(GameObject prefab) : base(prefab, requirements, secondaryStatModifiers, 
         primaryStatModifiers, isOneHanded, itemType, itemName)
     {
 
