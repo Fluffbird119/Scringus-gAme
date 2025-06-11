@@ -7,13 +7,14 @@ public enum ItemType
     Consumable, Weapon, misc
 }
 
-[CreateAssetMenu(fileName = "Basic Sword", menuName = "Inventory/Item")]
+[CreateAssetMenu(fileName = "ItemData", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
     public ItemType Type;
     private bool isBeingHeld = false;
     public GameObject visualPrefab;
     public string itemName;
+    private Item item;
 
     [TextArea]
     public string text;
