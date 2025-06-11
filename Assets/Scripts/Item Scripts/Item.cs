@@ -11,7 +11,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
     private string pathToSprite; //as in name of item if looked at while on ground or in menu
 
 
-    private Vector2 pos = new Vector2(); //as in position in game, particularly if unequipped and on the ground
+    
     private int hotbarIndex = -1; //position in hotbar (-1) means it it isn't in the hotbar
     //private player should know who its player is
 
@@ -20,7 +20,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
 
     public Item(Item.ItemType itemType, string pathToSprite)
     {
-        this.playerObject = playerObject;
+        //this.playerObject = playerObject; //will not innately have a player object upon construction
         this.pathToSprite = pathToSprite;
     }
 
@@ -32,7 +32,6 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
             Sprite targetSprite = Resources.Load<Sprite>(this.pathToSprite);
             this.gameObject.AddComponent<SpriteRenderer>();
             this.gameObject.GetComponent<SpriteRenderer>().sprite = targetSprite;
-        }
         }
     }
 
