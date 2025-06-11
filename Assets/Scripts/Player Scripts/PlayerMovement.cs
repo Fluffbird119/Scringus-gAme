@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.Rotate(0, 180, 0);
         }
+        
     }
 
     private void FixedUpdate()

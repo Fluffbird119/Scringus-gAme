@@ -11,12 +11,6 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        ItemGeneration itemGeneration = new ItemGeneration();
-        Debug.Log(itemGeneration);
-        BasicSword item = itemGeneration.generateBasicSword(
-            transform.position, 
-            new Quaternion(transform.rotation.x, 
-            transform.rotation.y, transform.rotation.z, transform.rotation.w));
     }
     public void setEquippedItem(Item equippedItem)
     {

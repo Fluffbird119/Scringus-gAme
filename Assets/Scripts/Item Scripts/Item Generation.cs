@@ -6,15 +6,12 @@ public class ItemGeneration : MonoBehaviour
 {
     public GameObject basicSwordPrefab;
 
-    public BasicSword generateBasicSword(Vector3 pos, Quaternion rotation)
+    public static void spawnItem(string filePath, Vector3 pos)
     {
-        BasicSword newBasicSword = new BasicSword(basicSwordPrefab);
-        Instantiate(newBasicSword, 
-            pos, 
-            Quaternion.Euler(
-                rotation.x, 
-                rotation.y, 
-                rotation.z));
-        return newBasicSword;
+        GameObject itemPrefab = Resources.Load<GameObject>(filePath);
+
+        GameObject item = Instantiate(itemPrefab, pos, Quaternion.identity);
+
+        WorldItem worldItem = item.GetComponent<WorldItem>();
     }
 }
