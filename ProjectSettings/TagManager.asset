@@ -47,6 +47,9 @@ TagManager:
   - name: Map
     uniqueID: 2544798117
     locked: 0
+  - name: NPC
+    uniqueID: 368415097
+    locked: 0
   - name: Player
     uniqueID: 1383521633
     locked: 0
