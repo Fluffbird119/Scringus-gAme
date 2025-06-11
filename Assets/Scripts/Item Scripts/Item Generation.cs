@@ -34,12 +34,8 @@ public class ItemGeneration : ScriptableObject
     {
         GameObject newItem = new GameObject(newObjectName);
         newItem.AddComponent<T>();
-        newItem.transform.localScale = new Vector3(100, 100, 100);
+        //newItem.transform.localScale = new Vector3(100, 100, 100);
         return newItem;
-    }
-    void Awake()
-    {
-        spawnInItem<Halberd>("protoHalberd");
     }
 
     public static GameObject getRandomWeapon()
