@@ -20,7 +20,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
 
     public Item(Item.ItemType itemType, string pathToSprite)
     {
-        this.itemType = itemType;
+        this.playerObject = playerObject;
         this.pathToSprite = pathToSprite;
     }
 
@@ -33,8 +33,8 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
             this.gameObject.AddComponent<SpriteRenderer>();
             this.gameObject.GetComponent<SpriteRenderer>().sprite = targetSprite;
         }
+        }
     }
-
 
 
     public void displayItemOnGround(Vector2 itemPos)

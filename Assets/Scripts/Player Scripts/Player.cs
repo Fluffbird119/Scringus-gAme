@@ -1,30 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     private List<Item> heldItems = new List<Item>(); //all items stored in the hotbar
     private Item equippedItem; //item held in hand
-    public GameObject player;
 
     void Start()
     {
-        ItemGeneration itemGenerator = new ItemGeneration();
-        //itemGenerator.generateBasicSword(player);
-        //ItemGenerator.spawnInItem<Halberd>("protoHalberd");
     }
     public void setEquippedItem(Item equippedItem)
     {
         this.equippedItem = equippedItem;
     }
 
-    public void equipItem(Item newItem)
+    public void equipItem()
     {
-        setEquippedItem(newItem);
-
-        equippedItem.gameObject.transform.SetParent(transform);
     }
 
 

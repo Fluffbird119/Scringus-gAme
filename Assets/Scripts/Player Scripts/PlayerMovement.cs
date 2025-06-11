@@ -11,7 +11,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
-        
     }
 
     void Update()
@@ -19,21 +18,19 @@ public class PlayerMovement : MonoBehaviour
         moveInput.x = Input.GetAxisRaw("Horizontal"); // only -1 or 0 or 1 if you use GetAxis instead it will smoothly transfer from -1 to 0 to 1 if you would want that for whatever reason (perhaps a fish character that slides around)
         moveInput.y = Input.GetAxisRaw("Vertical");
 
-        //moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")); // can also be written as this
-
         moveInput.Normalize(); // so diagonal movement is just as fast as up and down movement
 
         playerSpeed = rb.velocity.x;
+
         if (playerSpeed < 0 && transform.rotation == Quaternion.Euler(0, 0, 0))
         {
             transform.Rotate(0, 180, 0);
-            Debug.Log("Facing left");
         }
         if (playerSpeed > 0 && transform.rotation == Quaternion.Euler(0, -180, 0))
         {
             transform.Rotate(0, 180, 0);
-            Debug.Log("Facing right");
         }
+        
     }
 
     private void FixedUpdate()
