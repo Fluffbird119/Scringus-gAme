@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
     Vector2 moveInput;
     public int moveSpeed = 5;
     public float playerSpeed = 0;
-    public GameObject player;
 
     void Start()
     {
@@ -23,13 +22,13 @@ public class PlayerMovement : MonoBehaviour
 
         playerSpeed = rb.velocity.x;
 
-        if (playerSpeed < 0 && player.transform.rotation == Quaternion.Euler(0, 0, 0))
+        if (playerSpeed < 0 && transform.rotation == Quaternion.Euler(0, 0, 0))
         {
-            player.transform.Rotate(0, 180, 0);
+            transform.Rotate(0, 180, 0);
         }
-        if (playerSpeed > 0 && player.transform.rotation == Quaternion.Euler(0, -180, 0))
+        if (playerSpeed > 0 && transform.rotation == Quaternion.Euler(0, -180, 0))
         {
-            player.transform.Rotate(0, 180, 0);
+            transform.Rotate(0, 180, 0);
         }
     }
 
