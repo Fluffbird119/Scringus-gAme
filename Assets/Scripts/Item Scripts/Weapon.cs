@@ -23,6 +23,9 @@ public abstract class Weapon : Item
     //the following attributes are general item features that can be handled by this abstract class
     private bool meetsPassiveReq = false; //passive will likely require a primary stat
     private bool isActiveOffCooldown = false;
+    private bool isEquipped = false;
+    private GameObject equippedWpnPrefab;
+    private bool isInLeft = false; //only for one handed weapons
 
     //the actual item class should handle positioning on the ground and knowing if an item is in hotbar or not
     //private Vector2 pos = new Vector2(); //as in position in game, particularly if unequipped and on the ground
@@ -32,9 +35,9 @@ public abstract class Weapon : Item
     //the individual wepon types should handle the rendering/sprites
 
     //as an abstract class, its constructor will only be called by its inheriting classes, which is why it is so long
-    public Weapon(GameObject prefab, Dictionary<Weapon.PrimaryStats,float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
-                   Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, Item.ItemType itemType, 
-                   string itemName) : base (prefab, itemType, itemName)
+    public Weapon(Dictionary<Weapon.PrimaryStats, float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
+                  Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, Item.ItemType itemType, 
+                  string pathToSprite) : base (itemType, pathToSprite)
     {
         this.PrimaryStatInnates = pStatInn;
         this.SecondaryStatInnates = sStatInn;
@@ -44,10 +47,13 @@ public abstract class Weapon : Item
 
     //here are abstract methods all of the inheriting items will implement (it's almost like an interface!)
     public abstract void wpnAction(); //basically the attack, but items like shields 'action may just be 'block'
+    public abstract void wpnAltAction(); //the active ability of the weapon*** OR IF DUAL WEILDING, THE SECONDARY wpnAction
     public abstract void wpnPassive(); // this maybe shouldn't be a function? I don't know what item passives will be like
-    //note that the passive actually functions when a given wepon is in an inventory.
+    //note that the passive actually functions when a given weapon is in an inventory.
 
     public abstract string wpnActionDescription();
+    public abstract string wpnAltActionDescription();
+
     public abstract string wpnPassiveDescription(); //includes stat requirement
 
 
@@ -55,9 +61,19 @@ public abstract class Weapon : Item
 
     
 
-    public void displayEquippedWeapon() //intended to be implemented here
+    public void createEquippedWeapon(GameObject playerGameObject) //intended to be implemented here
     {
+        equippedWpnPrefab = Instantiate(this.gameObject);
+        equippedWpnPrefab.transform.SetParent(playerGameObject.transform); //player class needed to not make this a gameobject param
+    }
 
+    public void dropWeapon(GameObject playerGameObject)
+    {
+        dropItem(playerGameObject);
+        if(isEquipped)
+        {
+            Destroy(equippedWpnPrefab);
+        }
     }
 
 

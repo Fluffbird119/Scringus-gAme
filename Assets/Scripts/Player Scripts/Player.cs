@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     private List<Item> heldItems = new List<Item>(); //all items stored in the hotbar
     private Item equippedItem; //item held in hand
 
-    private void Start()
+    void Start()
     {
     }
     public void setEquippedItem(Item equippedItem)

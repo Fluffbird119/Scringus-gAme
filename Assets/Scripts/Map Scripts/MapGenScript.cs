@@ -38,9 +38,9 @@ public class MapGenScript : MonoBehaviour
 
 
         generateDoors(starterRoom, false);
-        
-        //PathFinder.collectionOfDebugWhathaveyou();
 
+        //PathFinder.collectionOfDebugWhathaveyou();
+        //ItemGeneration.spawnInItem<Halberd>("protoHalberd");
         
         /*
         List<int> path = PathFinder.FindPath(rooms[0, 0], rooms[2, 3], rooms); 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class ItemGeneration : MonoBehaviour
+public class ItemGeneration : ScriptableObject
 {
     private static GameObject[] weaponPrefabs = Resources.LoadAll<GameObject>("Prefabs/Weapon Prefabs");
 
@@ -21,6 +21,21 @@ public class ItemGeneration : MonoBehaviour
         WorldItem worldItem = item.AddComponent<WorldItem>();
         worldItem.setItem(itemData);
         Debug.Log(worldItem);
+    }
+
+
+    /*public BasicSword generateBasicSword(GameObject player)
+    {
+        BasicSword newBasicSword = new BasicSword(basicSwordPrefab, player);
+        Instantiate(newBasicSword, player.transform.position, player.transform.rotation);
+        return newBasicSword;
+    }*/
+    public static GameObject spawnInItem<T>(string newObjectName) where T : MonoBehaviour
+    {
+        GameObject newItem = new GameObject(newObjectName);
+        newItem.AddComponent<T>();
+        //newItem.transform.localScale = new Vector3(100, 100, 100);
+        return newItem;
     }
 
     public static GameObject getRandomWeapon()
