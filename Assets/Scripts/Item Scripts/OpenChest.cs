@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class OpenChest : MonoBehaviour
 {
@@ -36,6 +37,9 @@ public class OpenChest : MonoBehaviour
         }
         isOpen = true;
 
-        ItemGeneration.spawnItem("Prefabs/Weapon Prefabs/Basic Sword", transform.position);
+        float randDeltaX = Random.Range(-1, 1);
+        float randDeltaY = Random.Range(-1, 1);
+        Vector3 itemPos = new Vector3(transform.position.x + randDeltaX, transform.position.y + randDeltaY, transform.position.z);
+        ItemGeneration.spawnItem(ItemGeneration.getRandomWeapon(), itemPos);
     }
 }
