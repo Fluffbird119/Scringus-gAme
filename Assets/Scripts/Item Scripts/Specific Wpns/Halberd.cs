@@ -9,7 +9,9 @@ public sealed class Halberd : MeleeWpn
 
 
     //with this, just calling badGameObject.AddComponent<Halberd>(); will automatically provide spriteRenderer and the sprite if sprite renderer isnt there
-    public static readonly string pathToSprite = "Assets/Resources/Sprite Assets/Item sprites/Weapon sprites/Halberd_Sprite.ase";
+
+    //the actual path: "Assets/Resources/Sprite Assets/Item sprites/Weapon sprites/Halberd.png"
+    public static readonly string pathToSprite = "Sprite Assets/Item sprites/Weapon sprites/Halberd_Sprite";
 
 
     public Halberd() : base (null,null,null,false, Halberd.pathToSprite)

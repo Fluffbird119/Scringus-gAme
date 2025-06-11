@@ -9,10 +9,11 @@ public class Player : MonoBehaviour
     private Item equippedItem; //item held in hand
     public GameObject player;
 
-    private void Start()
+    void Start()
     {
         ItemGeneration itemGenerator = new ItemGeneration();
-        itemGenerator.generateBasicSword(player);
+        //itemGenerator.generateBasicSword(player);
+        //ItemGenerator.spawnInItem<Halberd>("protoHalberd");
     }
     public void setEquippedItem(Item equippedItem)
     {
@@ -23,7 +24,7 @@ public class Player : MonoBehaviour
     {
         setEquippedItem(newItem);
 
-        equippedItem.getPrefab().transform.SetParent(transform);
+        equippedItem.gameObject.transform.SetParent(transform);
     }
 
 

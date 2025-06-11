@@ -24,17 +24,14 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
         this.pathToSprite = pathToSprite;
     }
 
-    private void Awake()
+    void Awake()
     {
         //kind of accursed, I know
         if (!(this.gameObject.TryGetComponent<SpriteRenderer>(out SpriteRenderer irrelevant)))
         {
-            Sprite targetSprite = Resources.Load<Sprite>(pathToSprite);
+            Sprite targetSprite = Resources.Load<Sprite>(this.pathToSprite);
             this.gameObject.AddComponent<SpriteRenderer>();
-
-            SpriteRenderer sr = this.gameObject.GetComponent<SpriteRenderer>();
-
-            sr.sprite = targetSprite;
+            this.gameObject.GetComponent<SpriteRenderer>().sprite = targetSprite;
         }
     }
 
@@ -51,6 +48,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
     {
         this.transform.SetParent(hotbarGameObject[hotbarIndex].transform);
         this.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        this.hotbarIndex = hotbarIndex;
     }
 
     public void dropItem(GameObject playerGameObject) //whomever is the player dropping

@@ -6,7 +6,7 @@ public class BasicSword : MeleeWpn
 {
     //note, requirements prolly should be passed, but stat growths are the ratios of stat gain given to the player character, not the requirements
     
-    public static readonly string pathToSprite = "Assets/Resources/Sprite Assets/Item sprites/Weapon sprites/Basic Sword.ase";
+    public static readonly string pathToSprite = "Sprite Assets/Item sprites/Weapon sprites/Basic Sword.ase";
 
     private static readonly Dictionary<Weapon.PrimaryStats, float> requirements = new Dictionary<Weapon.PrimaryStats, float>
     {
