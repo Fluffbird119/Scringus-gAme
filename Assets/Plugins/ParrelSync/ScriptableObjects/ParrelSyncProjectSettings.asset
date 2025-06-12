@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1180444790, guid: 0ae8d181602a00248a82f64a684a1c88, type: 3}
-  m_Name: ApplicationData
+  m_Script: {fileID: 11500000, guid: c0011418c9d75434988a06b6df93b283, type: 3}
+  m_Name: ParrelSyncProjectSettings
   m_EditorClassIdentifier: 
-  _applicationId: 50fc9783-8dd2-4e10-a15e-628d2a2b0818
+  m_OptionalSymbolicLinkFolders: []

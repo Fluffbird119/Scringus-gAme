@@ -1,16 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     public Rigidbody2D rb;
     Vector2 moveInput;
-    public int moveSpeed = 5;
+    public int moveSpeed = 15;
 
+    
     void Start()
     {
-        
+
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if(!IsOwner)
+        {
+            enabled = false;
+        }
     }
 
     void Update()

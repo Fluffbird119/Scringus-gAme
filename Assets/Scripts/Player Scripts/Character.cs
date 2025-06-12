@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Character : Object
 {
-
-    private ArrayList<Stat> stats = new ArrayList<Stat>();
     public Character()
     {
 
