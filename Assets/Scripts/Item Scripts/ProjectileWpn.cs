@@ -13,14 +13,16 @@ public abstract class ProjectileWpn : Weapon
         //note that this goofy constructor passes virtually everything except that it innately can supply itemType
     }
     
-    private void swingAnimation(GameObject projectileSprite)
+    protected void firingAnimation(Transform projectileSource)
     {
-        throw new System.NotImplementedException();
+        projectileSource.Rotate(0, 0, -22.5f);
+        Debug.Log("fire animation");
     }
 
-    private void joustAnimation()
+    protected void fireProjectile(Vector3 start, Vector3 end, GameObject projectile)
     {
-        throw new System.NotImplementedException();
+        GameObject projectileObj = Instantiate(projectile, start, Quaternion.identity);
+        projectileObj.GetComponent<Rigidbody2D>().AddForce((end - start).normalized * 1000);
     }
 
 

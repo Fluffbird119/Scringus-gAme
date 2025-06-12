@@ -18,7 +18,7 @@ public class Inventory : MonoBehaviour
             drop();
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (heldItem != null && Input.GetMouseButtonDown(0))
         {
             item.use(heldItem);
         }

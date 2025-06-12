@@ -14,14 +14,8 @@ public class ItemData : ScriptableObject
     private bool isBeingHeld = false;
     public GameObject visualPrefab;
     public string itemName;
-
     [TextArea]
     public string text;
-
-    public void Use()
-    {
-        Debug.Log("Using " + itemName);
-    }
 
     public bool getIsBeingHeld() { return isBeingHeld; }
     public void setIsBeingHeld(bool isBeingHeld) { this.isBeingHeld = isBeingHeld; }
