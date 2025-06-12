@@ -9,7 +9,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
     //private SpriteRenderer spriteRenderer; ^^^
     public Item.ItemType itemType { get; } //non-weapon items are probably going to be called consumable or utility
     private string pathToSprite; //as in name of item if looked at while on ground or in menu
-
+    public bool isOneHanded { get; }
 
     
     private int hotbarIndex = -1; //position in hotbar (-1) means it it isn't in the hotbar
@@ -18,10 +18,12 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
     //do prefabs innately have sprites attached? Because if so, displaying an item in the hotbar and on the ground can be virtually the same
     //(except w/regard to location on character screen)
 
-    public Item(Item.ItemType itemType, string pathToSprite)
+    public Item(Item.ItemType itemType, bool isOneHanded, string pathToSprite)
     {
-        //this.playerObject = playerObject; //will not innately have a player object upon construction
+        //isOneHanded is always true for non weapons
         this.pathToSprite = pathToSprite;
+        this.isOneHanded = isOneHanded;
+        this.itemType = itemType;
     }
 
     void Awake()
@@ -55,6 +57,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
         this.transform.parent = null; //detatches positioning from parent hotbar
         this.transform.SetPositionAndRotation(playerGameObject.transform.position, Quaternion.identity);
     }
+
 
     public enum ItemType
     {

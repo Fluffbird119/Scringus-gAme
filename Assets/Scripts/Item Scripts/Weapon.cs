@@ -15,8 +15,6 @@ public abstract class Weapon : Item
 
     private Dictionary<Weapon.PrimaryStats, float> PrimaryStatGrowths = new Dictionary<Weapon.PrimaryStats, float>();
 
-    private bool isOneHanded;
-
     
 
 
@@ -37,12 +35,11 @@ public abstract class Weapon : Item
     //as an abstract class, its constructor will only be called by its inheriting classes, which is why it is so long
     public Weapon(Dictionary<Weapon.PrimaryStats, float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
                   Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, Item.ItemType itemType, 
-                  string pathToSprite) : base (itemType, pathToSprite)
+                  string pathToSprite) : base (itemType, isOneHanded, pathToSprite)
     {
         this.PrimaryStatInnates = pStatInn;
         this.SecondaryStatInnates = sStatInn;
         this.PrimaryStatGrowths = pStatGrw;
-        this.isOneHanded = isOneHanded;
     }
 
     //here are abstract methods all of the inheriting items will implement (it's almost like an interface!)
@@ -75,7 +72,6 @@ public abstract class Weapon : Item
             Destroy(equippedWpnPrefab);
         }
     }
-
 
 
 
