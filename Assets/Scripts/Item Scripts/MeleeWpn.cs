@@ -14,7 +14,7 @@ public abstract class MeleeWpn : Weapon
 
     private void swingAnimation(GameObject spriteToSwing) //the GameObject clone that is actively rendering on the player should go here
     {
-        throw new System.NotImplementedException();
+        spriteToSwing.transform.Rotate(0, 90, 0);
     }
 
     private void joustAnimation(GameObject spriteToJoust) //the GameObject clone that is actively rendering on the player should go here)

@@ -16,6 +16,12 @@ public class Inventory : MonoBehaviour
         {
             drop();
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            handAnchor.transform.Rotate(0, 0, -90);
+            //handAnchor.GameObject().
+        }
     }
     public void pickUp(ItemData item)
     {
@@ -25,6 +31,8 @@ public class Inventory : MonoBehaviour
         {
             heldItem = Instantiate(item.visualPrefab, handAnchor.position, handAnchor.rotation, handAnchor);
             heldItem.GetComponent<SpriteRenderer>().sortingLayerName = "Player";
+            Collider2D collider = heldItem.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
         }
     }
 
