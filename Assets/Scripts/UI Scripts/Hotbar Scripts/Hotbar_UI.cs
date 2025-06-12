@@ -20,7 +20,7 @@ public class Hotbar_UI : MonoBehaviour
     private int indexOfR = 4; //Equipped RHand
 
 
-    public void updateSlotNumber() //should also be called when player str changes
+    public void updateSlotNumber() //should also be called when player str changes, Hotbar CANNOT regress!
     {
         int temp = 1 + player.GetComponent<PlayerStats>().getStr() / 10;
         //this calculation is a prototype
@@ -70,7 +70,7 @@ public class Hotbar_UI : MonoBehaviour
         }
     }
 
-    public Item dropFromEquip()
+    public Item dropFromEquip() //method intended to be callable by hotkey
     {
         Item droppedItem = slots[indexOfR].GetComponent<HotbarSlot_UI>().getItem(); //this always drops whatever the right index is attatched to
         if (indexOfL != indexOfR) //if L,R are on diff 1-handed wpns
@@ -88,12 +88,24 @@ public class Hotbar_UI : MonoBehaviour
         }
             return droppedItem;
     }
-    public Item getEquipItem(bool isLeftHand)
+    public Item getEquipItem(bool isLeftHand) //returns equipped item on left or right hand (depending on bool) currently null for unequipped
     {
         int handIndex = isLeftHand ? indexOfL : indexOfR;
         return slots[handIndex].GetComponent<HotbarSlot_UI>().getItem();
     }
-    //[Cu] still needs to make a general index drop method!!!! FIXXXXXXX
+    
+    public Item dropFromIndex(int indexToDrop)
+    {
+        Item droppedItem = slots[indexToDrop].GetComponent<HotbarSlot_UI>().getItem();
+        if (indexToDrop == indexOfR)
+        {
+            dropFromEquip();
+        }
+        else if (indexToDrop == indexOfL) // bc of the else, can only be when L,R on separate 1-handed items
+        {
+        } //FIXXXXXXXX
+            return droppedItem;
+    }
 
     void Start()
     {
