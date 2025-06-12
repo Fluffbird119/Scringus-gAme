@@ -5,7 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class WorldItem : MonoBehaviour
 {
-    public ItemData item;
+    public ItemData itemData;
+    public Item item;
     private bool playerIsNear = false;
     private Inventory player;
 
@@ -13,7 +14,7 @@ public class WorldItem : MonoBehaviour
     {
         if (playerIsNear && Input.GetKeyDown(KeyCode.E))
         {
-            player.pickUp(item);
+            player.pickUp(itemData, item);
             Destroy(gameObject);
         }
     }
@@ -29,5 +30,5 @@ public class WorldItem : MonoBehaviour
         playerIsNear = false;
     }
 
-    public void setItem(ItemData item) { this.item = item; }
+    public void setItem(ItemData item) { this.itemData = item; }
 }

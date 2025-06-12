@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class MeleeWpn : Weapon
 {
-    
+    private int numFrames = 4;
     public MeleeWpn(Dictionary<Weapon.PrimaryStats, float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
                     Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, string pathToSprite) : base (pStatInn, 
                     sStatInn, pStatGrw, isOneHanded, Item.ItemType.MELEE_WPN, pathToSprite)
@@ -12,12 +12,15 @@ public abstract class MeleeWpn : Weapon
         //note that this goofy constructor passes virtually everything except that it innately can supply itemType
     }
 
-    private void swingAnimation(GameObject spriteToSwing) //the GameObject clone that is actively rendering on the player should go here
+    protected void swingAnimation(Transform weaponTransform) //the GameObject clone that is actively rendering on the player should go here
     {
-        spriteToSwing.transform.Rotate(0, 90, 0);
+        for (int i = 0; i < numFrames; i++)
+        {
+            weaponTransform.Rotate(0, 0, -90 / numFrames);
+        }
     }
 
-    private void joustAnimation(GameObject spriteToJoust) //the GameObject clone that is actively rendering on the player should go here)
+    protected void joustAnimation(GameObject weaponPrefab) //the GameObject clone that is actively rendering on the player should go here)
     {
         throw new System.NotImplementedException();
     }

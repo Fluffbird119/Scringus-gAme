@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO Consumable and Weapon whould inherit from this
+public abstract class Item : ScriptableObject // maybe should extend entity, ALSO Consumable and Weapon whould inherit from this
 {
     //details to be passed into constructors
     //private Transform transform; not needed as it is a monoBehaviour
@@ -24,6 +24,11 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
         this.pathToSprite = pathToSprite;
     }
 
+    /**
+     * basic use case of item
+     **/
+    public abstract void use(GameObject obj);
+    /*
     void Awake()
     {
         //kind of accursed, I know
@@ -55,7 +60,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
         this.transform.parent = null; //detatches positioning from parent hotbar
         this.transform.SetPositionAndRotation(playerGameObject.transform.position, Quaternion.identity);
     }
-
+    */
     public enum ItemType
     {
         UTILITY, //also called consumable by this code,

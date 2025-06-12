@@ -18,7 +18,7 @@ public sealed class Halberd : MeleeWpn
     {
 
     }
-    
+    override public void use(GameObject obj) { }
 
     public override void wpnAction() //basically the attack, but items like shields 'action may just be 'block'
     {

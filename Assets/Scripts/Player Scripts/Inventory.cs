@@ -7,8 +7,9 @@ using UnityEngine.UIElements;
 public class Inventory : MonoBehaviour
 {
     public Transform handAnchor;
-    public ItemData item;
+    public ItemData itemData;
     private GameObject heldItem;
+    private Item item;
 
     private void Update()
     {
@@ -19,17 +20,18 @@ public class Inventory : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            handAnchor.transform.Rotate(0, 0, -90);
-            //handAnchor.GameObject().
+            item.use(heldItem);
         }
     }
-    public void pickUp(ItemData item)
+    public void pickUp(ItemData itemData, Item item)
     {
+        this.itemData = itemData;
         this.item = item;
+        Debug.Log(item);
 
-        if (item.visualPrefab != null)
+        if (itemData.visualPrefab != null)
         {
-            heldItem = Instantiate(item.visualPrefab, handAnchor.position, handAnchor.rotation, handAnchor);
+            heldItem = Instantiate(itemData.visualPrefab, handAnchor.position, handAnchor.rotation, handAnchor);
             heldItem.GetComponent<SpriteRenderer>().sortingLayerName = "Player";
             Collider2D collider = heldItem.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
@@ -38,7 +40,7 @@ public class Inventory : MonoBehaviour
 
     public void drop()
     {
-        ItemGeneration.spawnItem(heldItem, handAnchor.position, this.item);
+        ItemGeneration.spawnItem(heldItem, handAnchor.position, this.itemData);
         Destroy(heldItem);
         heldItem = null;
         item = null;

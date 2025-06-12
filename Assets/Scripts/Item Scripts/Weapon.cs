@@ -60,7 +60,7 @@ public abstract class Weapon : Item
     //items may have a way of being 'upgraded' in the future? if so, this should be added here
 
     
-
+    /*
     public void createEquippedWeapon(GameObject playerGameObject) //intended to be implemented here
     {
         equippedWpnPrefab = Instantiate(this.gameObject);
@@ -74,7 +74,7 @@ public abstract class Weapon : Item
         {
             Destroy(equippedWpnPrefab);
         }
-    }
+    }*/
 
 
 
