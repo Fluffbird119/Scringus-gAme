@@ -2,6 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+/// <summary>
+/// The hotbar handles which Items are actively equipped and/or stored. It also handles equipping, unequipping and weapon passive requirements.
+/// If weapon passives remain exclusively as mere stat increases, it can handle those too.
+/// 
+/// *Important*: observe that many methods take and return objects of type 'Item' and *not* GameObjects
+///     Given that 'Item' extends MonoBehaviour which extends Component (and a Component exists <=> it is attached to a gameObject),
+///     any chosen 'Item' is attached to a GameObject. Because of this, the hotbar can easily require gameObjects be Items---
+///     while also still effectively storing the GameObjects too.
+///         Note that Item.gameObject returns the GameObject it is attached to, and the GetComponent method of GameObject can return its Item Component
+/// </summary>
+
+
+//[Cu]: NEEDS TO ADD: Call functions, finish setItemOrWhatev method, and handling requirements (and their passives too?)
+
+
+/*
+The methods are as follows: (NOT COMPLETE)
+
+updateSlotNumber() 
+    updates current available slots based on a players STR (should be called whenever this is modified)
+
+setIndexEquip(int)
+    literally just sets an index as equipped
+ */
+
+
 public class Hotbar_UI : MonoBehaviour
 {
     [SerializeField] private GameObject player;
@@ -22,27 +50,36 @@ public class Hotbar_UI : MonoBehaviour
 
     public void updateSlotNumber() //should also be called when player str changes, Hotbar CANNOT regress!
     {
-        int temp = 1 + player.GetComponent<PlayerStats>().getStr() / 10;
+        int newAvailability = numAvailableSlotFormula();
+
         //this calculation is a prototype
-        if(temp != numAvailableSlots)
+        if (newAvailability > numAvailableSlots)
         {
-            for(int i = 0; i < totalPossibleSlots; i++)
+            for(int i = numAvailableSlots; i < newAvailability; i++)
             {
-                slots[enableOrder[i]].SetActive(i < numAvailableSlots);
+                slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().setEnabledState(true);
             }
+            numAvailableSlots = newAvailability;
         }
     }
 
-    public void changeSlotEquipColors(int indexToChange, bool isLeftHand, bool isRightHand)
+    private void changeSlotEquipColors(int indexToChange, bool isLeftHand, bool isRightHand)
     {
         slots[indexToChange].GetComponent<HotbarSlot_UI>().setEquipColors(isLeftHand, isRightHand);
     }
     
-    public void equipToSlot(int indexToEquip) //Only 3 possible prev hand positions: L,R on 2handwpn/empty, L,R on same 1handwpn, L,R on diff 1handwpn
+    public void setIndexEquip(int indexToEquip) //Only 3 possible prev hand positions: L,R on 2handwpn/empty, L,R on same 1handwpn, L,R on diff 1handwpn
     {
         if(indexToEquip == indexOfL || indexToEquip == indexOfR)
         {
-            //simply do nothing
+            if(indexOfL != indexOfR) //exclusively when a player has distinct L,R equip, and one hand is selected to equip, swaps hands
+            {
+                changeSlotEquipColors(indexOfL, false, true); //makes previous L to be R hand
+                changeSlotEquipColors(indexOfR, true, false); //makes previous R to be L hand
+                int tempIndex = indexOfL; //
+                indexOfL = indexOfR;      // swapping the indices
+                indexOfR = tempIndex;     //
+            }
         }
         else if (Object.Equals(slots[indexToEquip].GetComponent<HotbarSlot_UI>().getItem(), null) || 
             (!slots[indexToEquip].GetComponent<HotbarSlot_UI>().getItem().isOneHanded)) //asks, is the item 2-handed or simply null?
@@ -79,14 +116,13 @@ public class Hotbar_UI : MonoBehaviour
             changeSlotEquipColors(indexOfR, false, false); //moves R to L
             changeSlotEquipColors(indexOfL, true, true);
             indexOfR = indexOfL;
-
         }
         else //L,R must be on the same spot
         {
             slots[indexOfR].GetComponent<HotbarSlot_UI>().emptySlot();
             changeSlotEquipColors(indexOfL, true, true); //technically the if statement code above actually works in all cases, I just don't like the extra assigning
         }
-            return droppedItem;
+        return droppedItem;
     }
     public Item getEquipItem(bool isLeftHand) //returns equipped item on left or right hand (depending on bool) currently null for unequipped
     {
@@ -101,27 +137,46 @@ public class Hotbar_UI : MonoBehaviour
         {
             dropFromEquip();
         }
-        else if (indexToDrop == indexOfL) // bc of the else, can only be when L,R on separate 1-handed items
+        else if (indexToDrop == indexOfL) // bc of the else, if clause is true only when L,R on separate 1-handed items
         {
-        } //FIXXXXXXXX
-            return droppedItem;
+            slots[indexToDrop].GetComponent<HotbarSlot_UI>().emptySlot(); //empties L
+            changeSlotEquipColors(indexOfL, false, false); //moves L to R
+            changeSlotEquipColors(indexOfR, true, true);
+            indexOfL = indexOfR;
+        }
+        else //when neither actively equipped hand is selected
+        {
+            slots[indexToDrop].GetComponent<HotbarSlot_UI>().emptySlot();
+        }
+        return droppedItem;
+    }
+
+    public void storeItem(Item itemToStore)
+    {
+        if (Object.Equals(slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem(), null))
+        {
+            slots[indexOfL].GetComponent<HotbarSlot_UI>().setItem(itemToStore);
+        }
+        //FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX (I need to finish this)
     }
 
     void Start()
     {
-        int temp = 1 + player.GetComponent<PlayerStats>().getStr() / 10;
+        this.numAvailableSlots = numAvailableSlotFormula();
         //this calculation is a prototype
-        if (temp != numAvailableSlots)
+        for (int i = 0; i < totalPossibleSlots; i++)
         {
-            for (int i = 0; i < totalPossibleSlots; i++)
-            {
-                slots[enableOrder[i]].SetActive(i < numAvailableSlots);
-                slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().emptySlot();
-            }
+            slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().setEnabledState(i < this.numAvailableSlots);
         }
+
         changeSlotEquipColors(indexOfR, true, true); //bc indexOfL == indexOfR
     }
 
+
+    private int numAvailableSlotFormula()
+    {
+        return 1 + player.GetComponent<PlayerStats>().getStr() / 10;
+    }
     
     
 }

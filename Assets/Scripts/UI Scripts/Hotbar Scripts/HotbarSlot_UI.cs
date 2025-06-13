@@ -13,9 +13,11 @@ public class HotbarSlot_UI : MonoBehaviour
     //private Sprite itemSprite;
     private Item item;
 
-    private Color defaultOuterSlotColour;
+    private Color defaultOuterSlotColour = Color.grey;
 
     private int indexInHotbar;
+
+    private bool isEnabled = false;
 
     public void setItem(Item item)
     {
@@ -36,19 +38,52 @@ public class HotbarSlot_UI : MonoBehaviour
     {
         if(isRightHand && isLeftHand) //i.e. two handed weapon
         {
-            outerSlot.color = new Color(1f,0.78f,1f,1f); //purple
+            outerSlot.color = new Color(1f,0.78f,1f,1f); //purple : L + R
         }
         else if(isRightHand)
         {
-            outerSlot.color = new Color(1f, 0.78f, 0.78f, 1f); //red
+            outerSlot.color = new Color(1f, 0.78f, 0.78f, 1f); //red : R
         }
         else if(isLeftHand)
         {
-            outerSlot.color = new Color(0.78f, 0.78f, 1f, 1f); //blue
+            outerSlot.color = new Color(0.78f, 0.78f, 1f, 1f); //blue : L
         }
         else
         {
             outerSlot.color = defaultOuterSlotColour; //default colour for when it isn't equipped whatsoever
+        }
+    }
+
+
+    public void setEnabledState(bool enabledState)
+    {
+        if(enabledState)
+        {
+            this.enable();
+        }
+        else
+        {
+            this.disable();
+        }
+    }
+
+    private void enable() 
+    {
+        if(!isEnabled)
+        {
+            emptySlot();
+            isEnabled = true;
+            outerSlot.color = defaultOuterSlotColour;
+        }
+    }
+
+    private void disable()
+    {
+        if(isEnabled)
+        {
+            emptySlot();
+            isEnabled = false;
+            outerSlot.color = new Color(1, 1, 1, 0);//makes everything transparent
         }
     }
 
@@ -66,6 +101,6 @@ public class HotbarSlot_UI : MonoBehaviour
     void Awake()
     {
         emptySlot();
-        defaultOuterSlotColour = outerSlot.color;
+        //defaultOuterSlotColour = outerSlot.color;
     }
 }
