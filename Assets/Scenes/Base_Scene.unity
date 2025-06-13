@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 127921462}
   m_Layer: 0
   m_Name: HandAnchor
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -153,6 +153,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1580467161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &292988028
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 29.210213
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 69.70197
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.013650044
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1665356094258088734, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8443005280027524328, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_Name
+      value: Basic Staff Prefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 8443005280027524328, guid: 67056931a32eef0429b349da8e568e36, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67056931a32eef0429b349da8e568e36, type: 3}
 --- !u!1 &480339000
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,7 +229,7 @@ GameObject:
   - component: {fileID: 480339009}
   m_Layer: 0
   m_Name: Circle
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -310,6 +371,63 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1001 &765499212
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 29.738457
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 70.97525
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.013650044
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3261331354832714914, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094367797057083244, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
+      propertyPath: m_Name
+      value: Basic Bow Prefab
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2b135f4b3b651e945b8157736c8fdf4e, type: 3}
 --- !u!1 &862120566
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,7 +679,7 @@ GameObject:
   - component: {fileID: 1465969663}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -671,7 +789,7 @@ GameObject:
   - component: {fileID: 1580467163}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -912,3 +1030,5 @@ SceneRoots:
   - {fileID: 1580467161}
   - {fileID: 1006498818}
   - {fileID: 2001840185}
+  - {fileID: 292988028}
+  - {fileID: 765499212}

@@ -6,7 +6,7 @@ using UnityEngine;
 public class BasicBow : ProjectileWpn
 {
     public static readonly string pathToWeaponSprite = "Sprite Assets/Item sprites/Weapon sprites/Basic Staff.ase";
-    public static readonly string pathToProjectileObj = "Prefabs/Weapon Prefabs/Basic Arrow";
+    public static readonly string pathToProjectileObj = "Prefabs/ProjectilePrefabs/Basic Arrow";
 
     private static readonly Dictionary<Weapon.PrimaryStats, float> requirements = new Dictionary<Weapon.PrimaryStats, float>
     {
@@ -36,13 +36,10 @@ public class BasicBow : ProjectileWpn
     override public void use(GameObject obj)
     {
         this.firingAnimation(obj.transform);
-        Vector3 mouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
+        Vector3 mouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z);
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(mouse);
         mousePos.z = 0;
-        Debug.Log("mouseX: " + mousePos.x);
-        Debug.Log("mouseY: " + mousePos.y);
-        Debug.Log("near: " + Camera.main.nearClipPlane);
-        Debug.Log("far: " + Camera.main.farClipPlane);
+        Debug.Log(obj.transform.position.z);
         this.fireProjectile(obj.transform.position, mousePos, Resources.Load<GameObject>(pathToProjectileObj));
     }
     public override void wpnAction()

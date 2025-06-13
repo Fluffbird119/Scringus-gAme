@@ -27,12 +27,12 @@ public class Inventory : MonoBehaviour
     {
         this.itemData = itemData;
         this.item = item;
-        Debug.Log(item);
 
         if (itemData.visualPrefab != null)
         {
             heldItem = Instantiate(itemData.visualPrefab, handAnchor.position, handAnchor.rotation, handAnchor);
             heldItem.GetComponent<SpriteRenderer>().sortingLayerName = "Player";
+            heldItem.tag = "Player";
             Collider2D collider = heldItem.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
         }

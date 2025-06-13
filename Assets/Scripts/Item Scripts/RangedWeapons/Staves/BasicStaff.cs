@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 [CreateAssetMenu(fileName = "BasicStaffItem", menuName = "Inventory/Basic_Staff")]
 public class BasicStaff : ProjectileWpn
 {
     public static readonly string pathToWeaponSprite = "Sprite Assets/Item sprites/Weapon sprites/Basic Staff.ase";
-    public static readonly string pathToProjectileObj = "Prefabs/Weapon Prefabs/Basic Magic Projectile";
+    public static readonly string pathToProjectileObj = "Prefabs/ProjectilePrefabs/Basic Magic Projectile";
 
     private static readonly Dictionary<Weapon.PrimaryStats, float> requirements = new Dictionary<Weapon.PrimaryStats, float>
     {
@@ -36,13 +37,9 @@ public class BasicStaff : ProjectileWpn
     override public void use(GameObject obj)
     {
         this.firingAnimation(obj.transform);
-        Vector3 mouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1);
+        Vector3 mouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z);
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(mouse);
         mousePos.z = 0;
-        Debug.Log("mouseX: " + mousePos.x);
-        Debug.Log("mouseY: " + mousePos.y);
-        Debug.Log("near: " + Camera.main.nearClipPlane);
-        Debug.Log("far: " + Camera.main.farClipPlane);
         this.fireProjectile(obj.transform.position, mousePos, Resources.Load<GameObject>(pathToProjectileObj));
     }
     public override void wpnAction()
