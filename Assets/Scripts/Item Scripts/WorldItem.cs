@@ -30,5 +30,6 @@ public class WorldItem : MonoBehaviour
         playerIsNear = false;
     }
 
-    public void setItem(ItemData item) { this.itemData = item; }
+    public void setItemData(ItemData itemData) { this.itemData = itemData; }
+    public void setItem(Item item) { this.item = item; }
 }

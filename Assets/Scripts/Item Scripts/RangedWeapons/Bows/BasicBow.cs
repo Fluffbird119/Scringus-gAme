@@ -39,7 +39,6 @@ public class BasicBow : ProjectileWpn
         Vector3 mouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z);
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(mouse);
         mousePos.z = 0;
-        Debug.Log(obj.transform.position.z);
         this.fireProjectile(obj.transform.position, mousePos, Resources.Load<GameObject>(pathToProjectileObj));
     }
     public override void wpnAction()

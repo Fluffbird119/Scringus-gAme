@@ -40,7 +40,7 @@ public class Inventory : MonoBehaviour
 
     public void drop()
     {
-        ItemGeneration.spawnItem(heldItem, handAnchor.position, this.itemData);
+        ItemGeneration.spawnItem(heldItem, handAnchor.position, this.itemData, this.item);
         Destroy(heldItem);
         heldItem = null;
         item = null;

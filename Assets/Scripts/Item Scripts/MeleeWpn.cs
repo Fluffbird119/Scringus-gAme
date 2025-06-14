@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class MeleeWpn : Weapon
 {
-    private int numFrames = 4;
+    private int numFrames = 10000;
     public MeleeWpn(Dictionary<Weapon.PrimaryStats, float> pStatInn, Dictionary<Weapon.SecondaryStats, float> sStatInn,
                     Dictionary<Weapon.PrimaryStats, float> pStatGrw, bool isOneHanded, string pathToSprite) : base (pStatInn, 
                     sStatInn, pStatGrw, isOneHanded, Item.ItemType.MELEE_WPN, pathToSprite)

@@ -13,23 +13,17 @@ public class ItemGeneration : ScriptableObject
         WorldItem worldItem = item.GetComponent<WorldItem>();
     }
 
-    public static void spawnItem(GameObject itemPrefab, Vector3 pos, ItemData itemData)
+    public static void spawnItem(GameObject itemPrefab, Vector3 pos, ItemData itemData, Item item)
     {
-        GameObject item = Instantiate(itemPrefab, pos, Quaternion.identity);
-        BoxCollider2D collider = item.AddComponent<BoxCollider2D>();
+        GameObject spawnedItem = Instantiate(itemPrefab, pos, Quaternion.identity);
+        BoxCollider2D collider = spawnedItem.AddComponent<BoxCollider2D>();
         collider.isTrigger = true;
-        WorldItem worldItem = item.AddComponent<WorldItem>();
-        worldItem.setItem(itemData);
-        Debug.Log(worldItem);
+
+        WorldItem worldItem = spawnedItem.AddComponent<WorldItem>();
+        worldItem.setItemData(itemData);
+        worldItem.setItem(item);
     }
 
-
-    /*public BasicSword generateBasicSword(GameObject player)
-    {
-        BasicSword newBasicSword = new BasicSword(basicSwordPrefab, player);
-        Instantiate(newBasicSword, player.transform.position, player.transform.rotation);
-        return newBasicSword;
-    }*/
     public static GameObject spawnInItem<T>(string newObjectName) where T : MonoBehaviour
     {
         GameObject newItem = new GameObject(newObjectName);
