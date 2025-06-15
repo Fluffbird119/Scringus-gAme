@@ -7,7 +7,7 @@ public class PlayerNetwork : NetworkBehaviour
 {
     //                                            |    can remove this   | (I choose not to)
     private readonly NetworkVariable<Vector2> netPos = new NetworkVariable<Vector2>(writePerm: NetworkVariableWritePermission.Owner);
-    private readonly NetworkVariable<Color32> netColor = new NetworkVariable<Color32>(writePerm: NetworkVariableWritePermission.Owner);
+    private readonly NetworkVariable<SpriteRenderer> netColor = new NetworkVariable<SpriteRenderer>(writePerm: NetworkVariableWritePermission.Owner);
 
     public GameObject playerBody;
     SpriteRenderer sprite;
@@ -22,12 +22,12 @@ public class PlayerNetwork : NetworkBehaviour
         if (IsOwner)
         {
             netPos.Value = transform.position;
-            netColor.Value = sprite.color;
+            netColor.Value = sprite;
         }
         else
         {
             transform.position = netPos.Value;
-            sprite.color = netColor.Value;
+            sprite = netColor.Value;
         }
     }
 }

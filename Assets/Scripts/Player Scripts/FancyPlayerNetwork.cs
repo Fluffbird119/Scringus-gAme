@@ -7,43 +7,48 @@ public class FancyPlayerNetwork : NetworkBehaviour
 {
     //                                                                 |         can remove this        | (I choose not to)
     private readonly NetworkVariable<PlayerNetworkData> netState = new NetworkVariable<PlayerNetworkData>(writePerm: NetworkVariableWritePermission.Owner);
+    //private readonly NetworkVariable<SpriteRenderer> netColor = new NetworkVariable<SpriteRenderer>(writePerm: NetworkVariableWritePermission.Owner);
 
     public float interpolationTime = 0.1f;
 
     private Vector2 vel;
 
     public GameObject playerBody;
-    SpriteRenderer sprite;
+    SpriteRenderer spriteRenderer;
 
     void Start()
     {
-        sprite = playerBody.GetComponent<SpriteRenderer>();
+        spriteRenderer = playerBody.GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {
         if (IsOwner)
         {
-
             netState.Value = new PlayerNetworkData()
             {
                 Position = transform.position,
-                Color = sprite.color
+                Sprite = spriteRenderer
             };
+
+            //netColor.Value = sprite;
         }
         else
         {
             transform.position = Vector2.SmoothDamp(transform.position, netState.Value.Position, ref vel, interpolationTime);
 
-            sprite.color = netState.Value.Color;
+            spriteRenderer = netState.Value.Sprite;
+            //sprite = netColor.Value;
         }
     }
 
     struct PlayerNetworkData : INetworkSerializable
     {
-        private float x, y;
+        private float x; 
+        private float y;
 
-        private byte r, g, b, a;
+        private SpriteRenderer playerSprite;
+
 
         internal Vector2 Position
         {
@@ -56,20 +61,15 @@ public class FancyPlayerNetwork : NetworkBehaviour
             }
         }
 
-        
-        internal Color32 Color
+        internal SpriteRenderer Sprite
         {
-            get => new Color32(r, g, b, a);
+            get => playerSprite;
 
             set
             {
-                r = value.r;
-                g = value.g;
-                b = value.b;
-                a = value.a;
+                playerSprite.sprite = value.sprite;
             }
         }
-        
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
