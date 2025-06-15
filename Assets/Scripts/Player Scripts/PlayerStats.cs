@@ -4,12 +4,20 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+
+
+    
+
     //[Cu] created this just so hotbar would stop yelling at him
-    private int str = 0;
-    private int dex = 0;
-    private int con = 0;
-    private int intel = 0; //cause int is reserved
-    private int wis = 0;
+    //[Header("Primary Player Stats")]
+    [SerializeField] private int str;
+    [SerializeField] private int dex;
+    [SerializeField] private int con;
+    [SerializeField] private int intel; //cause int is reserved
+    [SerializeField] private int wis;
+
+    [Header("Events")]
+    [SerializeField] public GameEvent onPlayerStrChanged;
 
     public PlayerStats(int str, int dex, int con, int intel, int wis)
     {
@@ -26,6 +34,13 @@ public class PlayerStats : MonoBehaviour
     public int getCon() { return con; }
     public int getIntel() { return intel; }
     public int getWis() { return wis; }
+
+    private int increaseStr(int amount)
+    {
+        this.str += amount;
+        onPlayerStrChanged.Raise(this, this.str);
+        return this.str;
+    }
 
     //[Cu] hasn't added in secondary stats or anything else because he's a lazy wanker
 

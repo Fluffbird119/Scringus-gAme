@@ -80,6 +80,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7430235138176065118}
   - component: {fileID: 1070294279305718859}
+  - component: {fileID: 2064435609360274995}
   m_Layer: 5
   m_Name: Hotbar
   m_TagString: Untagged
@@ -132,6 +133,34 @@ MonoBehaviour:
   - {fileID: 697306921061640227}
   - {fileID: 5593223348776687880}
   - {fileID: 8799427860867134112}
+--- !u!114 &2064435609360274995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9036880843463894647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3082416993cf9448e5695f832e997f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: ee551c5d319b22f4b809ef511fa4a9a4, type: 2}
+  response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1070294279305718859}
+        m_TargetAssemblyTypeName: Hotbar_UI, Assembly-CSharp
+        m_MethodName: updateSlotNumber
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &9208739485527481484
 GameObject:
   m_ObjectHideFlags: 0

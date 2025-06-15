@@ -20,13 +20,31 @@ using UnityEngine;
 
 
 /*
-The methods are as follows: (NOT COMPLETE)
+The public methods are as follows: (yes they are alphabetical, no I did not actually change the method order to reflect this)
 
-updateSlotNumber() 
-    updates current available slots based on a players STR (should be called whenever this is modified)
+dropFromEquip()
+    to be called by hotkey (Q), drops equipped item, but prefers to drop righthand if usnig two onehanded weapons
+
+dropFromIndex(int)
+    self-explanatory, to be called by mouse interaction on hotbar slot
+
+getItemEquip(bool)
+    this returns either the left or right hand equipped item based on the bool (the player will call this to perform weapon actions)
 
 setIndexEquip(int)
-    literally just sets an index as equipped
+    literally just sets an index as equipped by index (prefers to equip right hand if using 2 one-handed weapons) 
+    (also if either index is already equipped, swaps L,R hands)
+    To be called by mouse interaction on hotbar slot
+
+storeItem(Item)
+    This attempts to slot an item into the hotbar. If the player is unarmed, the weapon will become equipped actively. Otherwise it fills an empty && enabled slot.
+*Important*: the above method returns 'false' if there are not empty slots available (and of course doesn't slot anything). 
+    additionally, this method does not know anything about the context of the attempted slotting and thus needs to be called by whatever is equipping (worldItem?)
+
+updateSlotNumber(Component, object) : is a listener for PlayerStrChanged
+    updates current available slots based on a players STR (is called whenever this is modified, hence the listener)
+
+
  */
 
 
@@ -48,18 +66,22 @@ public class Hotbar_UI : MonoBehaviour
     private int indexOfR = 4; //Equipped RHand
 
 
-    public void updateSlotNumber() //should also be called when player str changes, Hotbar CANNOT regress!
+    public void updateSlotNumber(Component sender, object data) //also called when player str changes, Hotbar CANNOT regress!
     {
-        int newAvailability = numAvailableSlotFormula();
-
-        //this calculation is a prototype
-        if (newAvailability > numAvailableSlots)
+        if(data is int) //and data *should* be the player str stat! (the one unhindered by item/temporary effects)
         {
-            for(int i = numAvailableSlots; i < newAvailability; i++)
+            int playerStr = (int)data;
+            int newAvailability = numAvailableSlotFormula(playerStr);
+
+            //this calculation is a prototype
+            if (newAvailability > numAvailableSlots)
             {
-                slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().setEnabledState(true);
+                for (int i = numAvailableSlots; i < newAvailability; i++)
+                {
+                    slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().setEnabledState(true);
+                }
+                numAvailableSlots = newAvailability;
             }
-            numAvailableSlots = newAvailability;
         }
     }
 
@@ -120,7 +142,7 @@ public class Hotbar_UI : MonoBehaviour
         else //L,R must be on the same spot
         {
             slots[indexOfR].GetComponent<HotbarSlot_UI>().emptySlot();
-            changeSlotEquipColors(indexOfL, true, true); //technically the if statement code above actually works in all cases, I just don't like the extra assigning
+            changeSlotEquipColors(indexOfL, true, true); //technically the if statement code above actually works in all cases, I just dislike the extra assigning
         }
         return droppedItem;
     }
@@ -151,19 +173,12 @@ public class Hotbar_UI : MonoBehaviour
         return droppedItem;
     }
 
-    public void storeItem(Item itemToStore)
-    {
-        if (Object.Equals(slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem(), null))
-        {
-            slots[indexOfL].GetComponent<HotbarSlot_UI>().setItem(itemToStore);
-        }
-        //FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX (I need to finish this)
-    }
+    
 
     void Start()
     {
-        this.numAvailableSlots = numAvailableSlotFormula();
-        //this calculation is a prototype
+        this.numAvailableSlots = numAvailableSlotFormula(this.player.GetComponent<PlayerStats>().getStr()); //initial call uses connected player GameObject
+
         for (int i = 0; i < totalPossibleSlots; i++)
         {
             slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().setEnabledState(i < this.numAvailableSlots);
@@ -173,10 +188,32 @@ public class Hotbar_UI : MonoBehaviour
     }
 
 
-    private int numAvailableSlotFormula()
+    private int numAvailableSlotFormula(int playerStr) 
     {
-        return 1 + player.GetComponent<PlayerStats>().getStr() / 10;
+        //this calculation is a prototype
+        return 1 + playerStr / 10;
     }
-    
-    
+    public bool storeItem(Item itemToStore) //method for when picking up an empty item, returns bool to indicate if it succeeded
+    {
+        bool hotbarHasSpace = false;
+        if (Object.Equals(slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem(), null)) //if unarmed
+        {
+            slots[indexOfL].GetComponent<HotbarSlot_UI>().setItem(itemToStore);
+            hotbarHasSpace = true;
+        }
+        else
+        {
+            foreach (GameObject hotbarSlot in slots)
+            {
+                if (hotbarSlot.GetComponent<HotbarSlot_UI>().isEnabled && Object.Equals(hotbarSlot.GetComponent<HotbarSlot_UI>().getItem(), null))
+                {
+                    hotbarSlot.GetComponent<HotbarSlot_UI>().setItem(itemToStore);
+                    hotbarHasSpace = true;
+                    break;
+                }
+            }
+        }
+        return hotbarHasSpace;
+    }
+
 }

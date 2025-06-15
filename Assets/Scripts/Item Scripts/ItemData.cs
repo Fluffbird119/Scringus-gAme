@@ -10,10 +10,12 @@ public enum ItemType
 [CreateAssetMenu(fileName = "ItemData", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
-    public ItemType Type;
-    private bool isBeingHeld = false;
-    public GameObject visualPrefab;
-    public string itemName;
+    //[Cu]: I don't want to overwrite this and annihilate the other scene, so my comments explain the alternate version of this stuff for when time comes to
+    //          integrate all of this stuff
+    public ItemType Type; //Item.getItemType() also reports this albeit technically as Item.ItemType
+    private bool isBeingHeld = false; //being kept to not break the other scene, but hotbar should know about this
+    public GameObject visualPrefab; //Item.gameObject.GetComponent<SpriteRenderer>().sprite is the sprite if desired
+    public string itemName; //Item.gameObject.name
     private Item item;
 
     [TextArea]
