@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff84746152d192544a8887cd6a247023, type: 3}
   m_Name: Basic Bow Data
   m_EditorClassIdentifier: 
-  Type: 0
+  Type: 1
   visualPrefab: {fileID: -2253911629886400664, guid: fd0aecb8d7e8f9345ba9d6460963eb38, type: 3}
   itemName: 
   text: 

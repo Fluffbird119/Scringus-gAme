@@ -20,7 +20,7 @@ using UnityEngine;
 
 
 /*
-The public methods are as follows: (yes they are alphabetical, no I did not actually change the method order to reflect this)
+The public methods are as follows: (yes they are alphabetical here, no I did not change the actual method order to reflect this)
 
 dropFromEquip()
     to be called by hotkey (Q), drops equipped item, but prefers to drop righthand if usnig two onehanded weapons
@@ -62,8 +62,8 @@ public class Hotbar_UI : MonoBehaviour
 
     private static readonly int[] enableOrder = { 4, 5, 3, 6, 2, 7, 1, 8, 0, 9 };
 
-    private int indexOfL = 4; //equipped LHand
-    private int indexOfR = 4; //Equipped RHand
+    private int indexOfL = enableOrder[0]; //equipped LHand
+    private int indexOfR = enableOrder[0]; //Equipped RHand
 
 
     public void updateSlotNumber(Component sender, object data) //also called when player str changes, Hotbar CANNOT regress!
@@ -182,6 +182,7 @@ public class Hotbar_UI : MonoBehaviour
         for (int i = 0; i < totalPossibleSlots; i++)
         {
             slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().setEnabledState(i < this.numAvailableSlots);
+            slots[enableOrder[i]].GetComponent<HotbarSlot_UI>().setParentHotbar(this, enableOrder[i]);
         }
 
         changeSlotEquipColors(indexOfR, true, true); //bc indexOfL == indexOfR

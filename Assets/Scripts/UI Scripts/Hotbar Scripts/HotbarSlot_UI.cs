@@ -15,7 +15,8 @@ public class HotbarSlot_UI : MonoBehaviour
 
     private Color defaultOuterSlotColour = Color.grey;
 
-    private int indexInHotbar;
+    private Hotbar_UI parentHotbar_UI;
+    public int indexInHotbar {  get; private set; }
 
     public bool isEnabled { get; private set; }
 
@@ -70,7 +71,7 @@ public class HotbarSlot_UI : MonoBehaviour
         }
     }
 
-    private void enable() 
+    private void enable() // Enable() is reserved, change this name if this is being changed to capital
     {
         if(!isEnabled)
         {
@@ -92,8 +93,9 @@ public class HotbarSlot_UI : MonoBehaviour
         return this.item;
     }
 
-    public void setIndexForHotbar(int indexInHotbar)
+    public void setParentHotbar(Hotbar_UI parentHotbar_UI, int indexInHotbar)
     {
+        this.parentHotbar_UI = parentHotbar_UI;
         this.indexInHotbar = indexInHotbar;
     }
 
@@ -104,4 +106,13 @@ public class HotbarSlot_UI : MonoBehaviour
         emptySlot();
         //defaultOuterSlotColour = outerSlot.color;
     }
+    
+
+    /*private void OnMouseUpAsButton()
+    {
+        if(isEnabled)
+        {
+            this.parentHotbar_UI.setIndexEquip(this.indexInHotbar);
+        }
+    }*/
 }
