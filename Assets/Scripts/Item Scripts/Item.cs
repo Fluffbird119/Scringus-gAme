@@ -12,7 +12,8 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
     public bool isOneHanded { get; }
 
     
-    private int hotbarIndex = -1; //position in hotbar (-1) means it it isn't in the hotbar
+    //public bool isBeingHeld { get; private set; }
+
     //private player should know who its player is
 
     //do prefabs innately have sprites attached? Because if so, displaying an item in the hotbar and on the ground can be virtually the same
@@ -37,20 +38,6 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
         }
     }
 
-
-    public void displayItemOnGround(Vector2 itemPos)
-    {
-        this.transform.SetPositionAndRotation(itemPos, Quaternion.identity);
-        //like how the item shows up on the ground (when hovered, it should eventually have a description, but, for minimal product,that is not needed)
-        //the gameObject may need to have a sprite atttatched to it to be rendered for this class to handle the display.
-    }
-
-    public void displayItemInHotbar(int hotbarIndex, GameObject[] hotbarGameObject) //honestly the hotbar will prolly handle this by taking the prefab/sprite
-    {
-        this.transform.SetParent(hotbarGameObject[hotbarIndex].transform);
-        this.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        this.hotbarIndex = hotbarIndex;
-    }
 
     public void dropItem(GameObject playerGameObject) //whomever is the player dropping
     {

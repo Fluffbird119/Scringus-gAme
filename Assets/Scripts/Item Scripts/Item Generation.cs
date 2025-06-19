@@ -13,7 +13,7 @@ public class ItemGeneration : ScriptableObject
         WorldItem worldItem = item.GetComponent<WorldItem>();
     }
 
-    public static void spawnItem(GameObject itemPrefab, Vector3 pos, ItemData itemData)
+    public static void spawnItem(GameObject itemPrefab, Vector3 pos, ItemData itemData) //the version that uses itemData (by inventory)
     {
         GameObject item = Instantiate(itemPrefab, pos, Quaternion.identity);
         BoxCollider2D collider = item.AddComponent<BoxCollider2D>();
@@ -22,6 +22,16 @@ public class ItemGeneration : ScriptableObject
         worldItem.setItem(itemData);
         Debug.Log(worldItem);
     }
+
+    public static void spawnWorldItem(GameObject itemPrefab, Vector3 pos) //version for hotbar and heldItem
+    {
+        GameObject itemGameObject = Instantiate(itemPrefab, pos, Quaternion.identity);
+        BoxCollider2D collider = itemGameObject.AddComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+        WorldItem worldItem = itemGameObject.AddComponent<WorldItem>();
+        worldItem.setItemPrefab(itemPrefab);
+    }
+
 
 
     /*public BasicSword generateBasicSword(GameObject player)

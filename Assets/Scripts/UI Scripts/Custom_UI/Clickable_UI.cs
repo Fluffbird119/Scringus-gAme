@@ -11,20 +11,18 @@ using UnityEngine.EventSystems;
 
 public class Clickable_UI : MonoBehaviour, IPointerClickHandler
 {
+    public CustomGameEvent leftClickResponse; //note that CustomGameEvent is from file GameEventListener (however this is NOT a broadcast!)
+    public CustomGameEvent rightClickResponse;//Also note that CustomGameEvent is just a unityEvent but one that stores <Component sender, object data>
+
+    
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
-        throw new System.NotImplementedException(); //I'd prefr to make a general invoke that doesn't require a broadcast
+        if (eventData.button == PointerEventData.InputButton.Left)
+            leftClickResponse.Invoke(this, eventData);
+        else if (eventData.button == PointerEventData.InputButton.Right)
+            rightClickResponse.Invoke(this, eventData);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //currently neither prevents clicking through the ui (maybe it already handles this)
+    //nor handles anything but pointer click
 }

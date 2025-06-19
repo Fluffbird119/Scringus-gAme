@@ -107,6 +107,18 @@ public class HotbarSlot_UI : MonoBehaviour
         //defaultOuterSlotColour = outerSlot.color;
     }
     
+    //CURRENTLY: Leftclick: active equip at index, RightClick: drop at index
+    public void leftClickResponse(Component sender, object data) //although they are currently unused, these params are needed to be invoked by a CustomGameEvent
+    {
+        if(this.isEnabled)
+            this.parentHotbar_UI.setIndexEquip(this.indexInHotbar);
+    }
+
+    public void rightClickResponse(Component sender, object data) //although they are currently unused, these params are needed to be invoked by a CustomGameEvent
+    {
+        if (this.isEnabled)
+            this.parentHotbar_UI.dropFromIndex(this.indexInHotbar);
+    }
 
     /*private void OnMouseUpAsButton()
     {

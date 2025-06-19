@@ -22,21 +22,22 @@ using UnityEngine;
 /*
 The public methods are as follows: (yes they are alphabetical here, no I did not change the actual method order to reflect this)
 
-dropFromEquip()
+dropFromEquip() : broadcasts HotbarItemDrop
     to be called by hotkey (Q), drops equipped item, but prefers to drop righthand if usnig two onehanded weapons
+    
 
-dropFromIndex(int)
+dropFromIndex(int) : broadcasts HotbarItemDrop
     self-explanatory, to be called by mouse interaction on hotbar slot
 
 getItemEquip(bool)
     this returns either the left or right hand equipped item based on the bool (the player will call this to perform weapon actions)
 
-setIndexEquip(int)
+setIndexEquip(int) : broadcasts HeldItemOnlyChange
     literally just sets an index as equipped by index (prefers to equip right hand if using 2 one-handed weapons) 
     (also if either index is already equipped, swaps L,R hands)
     To be called by mouse interaction on hotbar slot
 
-storeItem(Item)
+storeItem(Item) : broadcasts HotbarStatusChange
     This attempts to slot an item into the hotbar. If the player is unarmed, the weapon will become equipped actively. Otherwise it fills an empty && enabled slot.
 *Important*: the above method returns 'false' if there are not empty slots available (and of course doesn't slot anything). 
     additionally, this method does not know anything about the context of the attempted slotting and thus needs to be called by whatever is equipping (worldItem?)
@@ -55,6 +56,12 @@ public class Hotbar_UI : MonoBehaviour
     [SerializeField] private GameObject HotbarPanel;
 
     [SerializeField] private List<GameObject> slots = new List<GameObject>(); //each 'slot' NEEDS the HotbarSlot_UI component
+
+    [Header("Events")]
+    [SerializeField] public GameEvent onHotbarItemDropped;  //calls whatever the other two call as well
+    [SerializeField] public GameEvent onHotbarStatusChanged;//as in the contents of the hotbar are now different (also calls whatever onHeldItemOnlyChanged calls)
+    [SerializeField] public GameEvent onHeldItemOnlyChanged;//as in merely the chosen equipped weapon is different
+
 
     private int numAvailableSlots = 1;
 
@@ -127,6 +134,8 @@ public class Hotbar_UI : MonoBehaviour
             }
             indexOfR = indexToEquip;
         }
+
+        broadcastHeldItemOnlyChange();
     }
 
     public Item dropFromEquip() //method intended to be callable by hotkey
@@ -144,8 +153,15 @@ public class Hotbar_UI : MonoBehaviour
             slots[indexOfR].GetComponent<HotbarSlot_UI>().emptySlot();
             changeSlotEquipColors(indexOfL, true, true); //technically the if statement code above actually works in all cases, I just dislike the extra assigning
         }
-        return droppedItem;
+
+        if (!Object.Equals(droppedItem, null))
+        {
+            broadcastHotbarItemDrop(droppedItem);
+        }
+
+        return droppedItem; //because of the broadcast, may no longer need to return this
     }
+
     public Item getEquipItem(bool isLeftHand) //returns equipped item on left or right hand (depending on bool) currently null for unequipped
     {
         int handIndex = isLeftHand ? indexOfL : indexOfR;
@@ -170,7 +186,13 @@ public class Hotbar_UI : MonoBehaviour
         {
             slots[indexToDrop].GetComponent<HotbarSlot_UI>().emptySlot();
         }
-        return droppedItem;
+
+        if (indexToDrop != indexOfR && !Object.Equals(droppedItem,null)) //the first condition is because dropFromEquip already handles broadcasing
+        {
+            broadcastHotbarItemDrop(droppedItem);
+        }
+
+        return droppedItem; //because of the broadcast, may no longer need to return this
     }
 
     
@@ -194,6 +216,30 @@ public class Hotbar_UI : MonoBehaviour
         //this calculation is a prototype
         return 1 + playerStr / 10;
     }
+
+    private void broadcastHotbarItemDrop(Item droppedItem) //currently this broadcast has sender = Hotbar_UI, data = Item
+    {
+        onHotbarItemDropped.Raise(this, droppedItem);
+    }
+
+    private void broadcastHotbarStatusChange() //currently this broadcast has sender = Hotbar_UI, data = List<Item>
+    {
+        List<Item> hotbarItemList = new List<Item>();
+        foreach (GameObject slot in slots)
+        {
+            HotbarSlot_UI hs_UI = slot.GetComponent<HotbarSlot_UI>();
+            if (hs_UI.isEnabled && !Object.Equals(hs_UI.getItem(), null)) //i.e. foreach non-empty enabled slot
+                hotbarItemList.Add(hs_UI.getItem());
+        }
+        onHotbarStatusChanged.Raise(this, hotbarItemList);
+    }
+
+    private void broadcastHeldItemOnlyChange() //currently this broadcast has sender = Hotbar_UI, data = (Item, Item) [notably left equip, right equip]
+    {
+        onHeldItemOnlyChanged.Raise(this, (getEquipItem(true), getEquipItem(false)));
+    }
+
+
     public bool storeItem(Item itemToStore) //method for when picking up an empty item, returns bool to indicate if it succeeded
     {
         bool hotbarHasSpace = false;
@@ -214,6 +260,12 @@ public class Hotbar_UI : MonoBehaviour
                 }
             }
         }
+
+        if(hotbarHasSpace)
+        {
+            broadcastHotbarStatusChange();
+        }
+
         return hotbarHasSpace;
     }
 
