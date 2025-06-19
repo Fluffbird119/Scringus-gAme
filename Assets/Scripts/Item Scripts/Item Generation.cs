@@ -25,11 +25,14 @@ public class ItemGeneration : ScriptableObject
 
     public static void spawnWorldItem(GameObject itemPrefab, Vector3 pos) //version for hotbar and heldItem
     {
-        GameObject itemGameObject = Instantiate(itemPrefab, pos, Quaternion.identity);
-        BoxCollider2D collider = itemGameObject.AddComponent<BoxCollider2D>();
-        collider.isTrigger = true;
-        WorldItem worldItem = itemGameObject.AddComponent<WorldItem>();
-        worldItem.setItemPrefab(itemPrefab);
+        if(itemPrefab != null) // != null can be used because itemPrefab is a GameObject
+        {
+            GameObject itemGameObject = Instantiate(itemPrefab, pos, Quaternion.identity);
+            BoxCollider2D collider = itemGameObject.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            WorldItem worldItem = itemGameObject.AddComponent<WorldItem>();
+            worldItem.setItemPrefab(itemPrefab);
+        }
     }
 
 

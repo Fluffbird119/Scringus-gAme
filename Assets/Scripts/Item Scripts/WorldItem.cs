@@ -5,12 +5,15 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class WorldItem : MonoBehaviour
 {
-    public GameObject itemPrefab; //only stored so that when picked up, can throw the itemprefab without the collider
+    private GameObject itemPrefab; //only stored so that when picked up, can throw the itemprefab without the collider (ALSO forcefully has spriterenderer disabled
     public ItemData itemData; // left here for inventory verison
     private bool playerIsNear = false;
     private Inventory player; // left here for inventory version
 
-    private void Update()
+    //[Header("Events")]
+    //[SerializeField] private GameEvent onPickUpItemAttempt;
+
+    private void Update() //right now it is a bit weird that all items are constantly calling this
     {
         /* (overwritten inventory verion)
         if (playerIsNear && Input.GetKeyDown(KeyCode.E))
@@ -36,6 +39,12 @@ public class WorldItem : MonoBehaviour
 
     public void setItemPrefab(GameObject itemPrefab)
     {
-        this.itemPrefab = itemPrefab;
+        GameObject bucketPrefab = Instantiate(itemPrefab);
+        bucketPrefab.GetComponent<SpriteRenderer>().enabled = false;
+        this.itemPrefab = bucketPrefab;
+    }
+    public GameObject getItemPrefab()
+    {
+        return this.itemPrefab;
     }
 }

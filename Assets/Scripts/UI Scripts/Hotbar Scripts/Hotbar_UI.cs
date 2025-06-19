@@ -58,9 +58,9 @@ public class Hotbar_UI : MonoBehaviour
     [SerializeField] private List<GameObject> slots = new List<GameObject>(); //each 'slot' NEEDS the HotbarSlot_UI component
 
     [Header("Events")]
-    [SerializeField] public GameEvent onHotbarItemDropped;  //calls whatever the other two call as well
-    [SerializeField] public GameEvent onHotbarStatusChanged;//as in the contents of the hotbar are now different (also calls whatever onHeldItemOnlyChanged calls)
-    [SerializeField] public GameEvent onHeldItemOnlyChanged;//as in merely the chosen equipped weapon is different
+    [SerializeField] private GameEvent onHotbarItemDropped;  //calls whatever the other two call as well
+    [SerializeField] private GameEvent onHotbarStatusChanged;//as in the contents of the hotbar are now different (also calls whatever onHeldItemOnlyChanged calls)
+    [SerializeField] private GameEvent onHeldItemOnlyChanged;//as in merely the chosen equipped weapon is different
 
 
     private int numAvailableSlots = 1;
@@ -72,6 +72,32 @@ public class Hotbar_UI : MonoBehaviour
     private int indexOfL = enableOrder[0]; //equipped LHand
     private int indexOfR = enableOrder[0]; //Equipped RHand
 
+
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Item droppedItem = dropFromEquip();
+            if(!Object.Equals(droppedItem, null)) //hotbar should probably not handle this part
+            {
+                droppedItem.gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                ItemGeneration.spawnWorldItem(droppedItem.gameObject, player.transform.position);
+                Destroy(droppedItem.gameObject);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            WorldItem worldItem = player.GetComponent<Player>().initiateEquipItem();
+            if (worldItem != null)
+            {
+                bool storeItemSuccess = storeItem(worldItem.getItemPrefab().GetComponent<Item>());
+                if (storeItemSuccess)
+                {
+                    player.GetComponent<Player>().concludeEquipItem(worldItem);
+                }
+            }
+        }
+    }
 
     public void updateSlotNumber(Component sender, object data) //also called when player str changes, Hotbar CANNOT regress!
     {
@@ -217,9 +243,10 @@ public class Hotbar_UI : MonoBehaviour
         return 1 + playerStr / 10;
     }
 
-    private void broadcastHotbarItemDrop(Item droppedItem) //currently this broadcast has sender = Hotbar_UI, data = Item
+    private void broadcastHotbarItemDrop(Item droppedItem)  //currently this broadcast has sender = Hotbar_UI, data = Item
     {
         onHotbarItemDropped.Raise(this, droppedItem);
+        broadcastHotbarStatusChange();                      //*Important* : this also broadcasts HotbarStatusChange (and by transitive prop, HeldItemOnlyChange)
     }
 
     private void broadcastHotbarStatusChange() //currently this broadcast has sender = Hotbar_UI, data = List<Item>
@@ -232,6 +259,7 @@ public class Hotbar_UI : MonoBehaviour
                 hotbarItemList.Add(hs_UI.getItem());
         }
         onHotbarStatusChanged.Raise(this, hotbarItemList);
+        broadcastHeldItemOnlyChange();                      //*Important* : this also broadcasts HeldItemOnlyChange
     }
 
     private void broadcastHeldItemOnlyChange() //currently this broadcast has sender = Hotbar_UI, data = (Item, Item) [notably left equip, right equip]

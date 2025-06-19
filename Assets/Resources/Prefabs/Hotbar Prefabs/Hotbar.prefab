@@ -133,6 +133,9 @@ MonoBehaviour:
   - {fileID: 697306921061640227}
   - {fileID: 5593223348776687880}
   - {fileID: 8799427860867134112}
+  onHotbarItemDropped: {fileID: 11400000, guid: 831a44c8996179647909307b2a817f0d, type: 2}
+  onHotbarStatusChanged: {fileID: 11400000, guid: e9e40a3eb418546438c55de0af4e1e62, type: 2}
+  onHeldItemOnlyChanged: {fileID: 11400000, guid: d7dc468ecbab08f4fa6ef8eb16a6769e, type: 2}
 --- !u!114 &2064435609360274995
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,7 +9,7 @@ public abstract class Item : MonoBehaviour // maybe should extend entity, ALSO C
     //private SpriteRenderer spriteRenderer; ^^^
     public Item.ItemType itemType { get; } //non-weapon items are probably going to be called consumable or utility
     private string pathToSprite; //as in name of item if looked at while on ground or in menu
-    public bool isOneHanded { get; }
+    public bool isOneHanded { get; private set; }
 
     
     //public bool isBeingHeld { get; private set; }
