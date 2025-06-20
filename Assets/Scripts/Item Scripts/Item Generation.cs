@@ -27,11 +27,28 @@ public class ItemGeneration : ScriptableObject
     {
         if(itemPrefab != null) // != null can be used because itemPrefab is a GameObject
         {
-            GameObject itemGameObject = Instantiate(itemPrefab, pos, Quaternion.identity);
-            BoxCollider2D collider = itemGameObject.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
-            WorldItem worldItem = itemGameObject.AddComponent<WorldItem>();
-            worldItem.setItemPrefab(itemPrefab);
+            GameObject itemPrefabCopy = Instantiate(itemPrefab, pos, Quaternion.identity);
+            itemPrefabCopy.name = nameFunction(itemPrefab, " (HBS)", " (WIV)");
+
+            if (itemPrefabCopy.TryGetComponent<Collider2D>(out Collider2D currentCollider2D))
+            {
+                currentCollider2D.enabled = true;
+                currentCollider2D.isTrigger = true;
+            }
+            else
+            {
+                BoxCollider2D newCollider = itemPrefabCopy.AddComponent<BoxCollider2D>();
+                newCollider.isTrigger = true;
+            }
+
+            if (itemPrefabCopy.TryGetComponent<WorldItem>(out WorldItem currentWorldItem))
+            {
+                currentWorldItem.enabled = true;
+            }
+            else
+            {
+                WorldItem newWorldItem = itemPrefabCopy.AddComponent<WorldItem>();
+            }
         }
     }
 
@@ -57,4 +74,21 @@ public class ItemGeneration : ScriptableObject
 
         return weaponPrefabs[randIndex];
     }
+
+
+    public static string nameFunction(GameObject itemPrefab, string endToRemove, string endToAdd)
+    {
+        string oldName = itemPrefab.name;
+        string newName = "";
+        if (oldName[^endToRemove.Length..] == endToRemove)
+        {
+            newName = oldName[..^endToRemove.Length] + endToAdd; //'..' means 'range of index values' and ^ means 'Length - what comes after'
+        }
+        else
+        {
+            newName = oldName + endToAdd;
+        }
+        return newName;
+    }
+
 }

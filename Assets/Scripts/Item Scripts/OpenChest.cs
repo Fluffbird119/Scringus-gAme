@@ -40,6 +40,6 @@ public class OpenChest : MonoBehaviour
         float randDeltaX = Random.Range(-1, 1);
         float randDeltaY = Random.Range(-1, 1);
         Vector3 itemPos = new Vector3(transform.position.x + randDeltaX, transform.position.y + randDeltaY, transform.position.z);
-        ItemGeneration.spawnItem(ItemGeneration.getRandomWeapon(), itemPos);
+        ItemGeneration.spawnWorldItem(ItemGeneration.getRandomWeapon(), itemPos);
     }
 }

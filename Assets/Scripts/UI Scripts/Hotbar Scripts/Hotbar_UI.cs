@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -73,27 +74,32 @@ public class Hotbar_UI : MonoBehaviour
     private int indexOfR = enableOrder[0]; //Equipped RHand
 
 
-    public void Update()
+    public void Update() //patchwork update function that handles the drop and equip hotkeys and prolly needs to be changed.
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
             Item droppedItem = dropFromEquip();
-            if(!Object.Equals(droppedItem, null)) //hotbar should probably not handle this part
+            if(!System.Object.Equals(droppedItem, null)) //hotbar should probably not handle this part
             {
                 droppedItem.gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 ItemGeneration.spawnWorldItem(droppedItem.gameObject, player.transform.position);
                 Destroy(droppedItem.gameObject);
             }
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E)) //hotbar honestly shouldn't handle this either, maybe?
         {
             WorldItem worldItem = player.GetComponent<Player>().initiateEquipItem();
             if (worldItem != null)
             {
-                bool storeItemSuccess = storeItem(worldItem.getItemPrefab().GetComponent<Item>());
+                GameObject hotbarSafeCopy = worldItem.getHotbarSafeCopy();
+                bool storeItemSuccess = storeItem(hotbarSafeCopy.GetComponent<Item>());
                 if (storeItemSuccess)
                 {
                     player.GetComponent<Player>().concludeEquipItem(worldItem);
+                }
+                else
+                {
+                    Destroy(hotbarSafeCopy); //so as to prevent making extra duplicates
                 }
             }
         }
@@ -125,9 +131,9 @@ public class Hotbar_UI : MonoBehaviour
     
     public void setIndexEquip(int indexToEquip) //Only 3 possible prev hand positions: L,R on 2handwpn/empty, L,R on same 1handwpn, L,R on diff 1handwpn
     {
-        if(indexToEquip == indexOfL || indexToEquip == indexOfR)
+        if (indexToEquip == indexOfL || indexToEquip == indexOfR)
         {
-            if(indexOfL != indexOfR) //exclusively when a player has distinct L,R equip, and one hand is selected to equip, swaps hands
+            if (indexOfL != indexOfR) //exclusively when a player has distinct L,R equip, and one hand is selected to equip, swaps hands
             {
                 changeSlotEquipColors(indexOfL, false, true); //makes previous L to be R hand
                 changeSlotEquipColors(indexOfR, true, false); //makes previous R to be L hand
@@ -136,8 +142,10 @@ public class Hotbar_UI : MonoBehaviour
                 indexOfR = tempIndex;     //
             }
         }
-        else if (Object.Equals(slots[indexToEquip].GetComponent<HotbarSlot_UI>().getItem(), null) || 
-            (!slots[indexToEquip].GetComponent<HotbarSlot_UI>().getItem().isOneHanded)) //asks, is the item 2-handed or simply null?
+        else if (System.Object.Equals(slots[indexToEquip].GetComponent<HotbarSlot_UI>().getItem(), null) || // asks if the indexToEquip holds a null item
+                (!slots[indexToEquip].GetComponent<HotbarSlot_UI>().getItem().isOneHanded)               || // asks if is the to-be-equipped item 2-handed
+                (System.Object.Equals(slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem(), null))    || // asks if previous L item is null
+                (!slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem().isOneHanded))                     // asks if previous L item is 2-handed
         {
             changeSlotEquipColors(indexOfL, false, false);
             changeSlotEquipColors(indexOfR, false, false);
@@ -145,10 +153,9 @@ public class Hotbar_UI : MonoBehaviour
             indexOfL = indexToEquip;
             indexOfR = indexToEquip;
         }
-        else if(Object.Equals(slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem(), null) ||
-                (!slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem().isOneHanded)) //asks, is the previous L item NOT on a onehanded item?
-        {
-            if(indexOfL == indexOfR) //if true, means previous L,R on same 1-handed wpn
+        else //i.e. the scenario where previous item was one handed and indexToEquip holds a one-handed item
+        { 
+            if (indexOfL == indexOfR) //if true, means previous L,R on same 1-handed wpn
             {
                 changeSlotEquipColors(indexOfL, true, false); //bc it was being held by 2 hands
                 changeSlotEquipColors(indexToEquip, false, true); //so right hand is being used to equip
@@ -180,7 +187,7 @@ public class Hotbar_UI : MonoBehaviour
             changeSlotEquipColors(indexOfL, true, true); //technically the if statement code above actually works in all cases, I just dislike the extra assigning
         }
 
-        if (!Object.Equals(droppedItem, null))
+        if (!System.Object.Equals(droppedItem, null))
         {
             broadcastHotbarItemDrop(droppedItem);
         }
@@ -213,7 +220,7 @@ public class Hotbar_UI : MonoBehaviour
             slots[indexToDrop].GetComponent<HotbarSlot_UI>().emptySlot();
         }
 
-        if (indexToDrop != indexOfR && !Object.Equals(droppedItem,null)) //the first condition is because dropFromEquip already handles broadcasing
+        if (indexToDrop != indexOfR && !System.Object.Equals(droppedItem,null)) //the first condition is because dropFromEquip already handles broadcasing
         {
             broadcastHotbarItemDrop(droppedItem);
         }
@@ -255,7 +262,7 @@ public class Hotbar_UI : MonoBehaviour
         foreach (GameObject slot in slots)
         {
             HotbarSlot_UI hs_UI = slot.GetComponent<HotbarSlot_UI>();
-            if (hs_UI.isEnabled && !Object.Equals(hs_UI.getItem(), null)) //i.e. foreach non-empty enabled slot
+            if (hs_UI.isEnabled && !System.Object.Equals(hs_UI.getItem(), null)) //i.e. foreach non-empty enabled slot
                 hotbarItemList.Add(hs_UI.getItem());
         }
         onHotbarStatusChanged.Raise(this, hotbarItemList);
@@ -264,14 +271,15 @@ public class Hotbar_UI : MonoBehaviour
 
     private void broadcastHeldItemOnlyChange() //currently this broadcast has sender = Hotbar_UI, data = (Item, Item) [notably left equip, right equip]
     {
-        onHeldItemOnlyChanged.Raise(this, (getEquipItem(true), getEquipItem(false)));
+        Tuple<Item, Item> itemsInHandsTuple = new Tuple<Item, Item>(getEquipItem(true), getEquipItem(false));
+        onHeldItemOnlyChanged.Raise(this, itemsInHandsTuple);
     }
 
 
     public bool storeItem(Item itemToStore) //method for when picking up an empty item, returns bool to indicate if it succeeded
     {
         bool hotbarHasSpace = false;
-        if (Object.Equals(slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem(), null)) //if unarmed
+        if (System.Object.Equals(slots[indexOfL].GetComponent<HotbarSlot_UI>().getItem(), null)) //if unarmed
         {
             slots[indexOfL].GetComponent<HotbarSlot_UI>().setItem(itemToStore);
             hotbarHasSpace = true;
@@ -280,7 +288,7 @@ public class Hotbar_UI : MonoBehaviour
         {
             foreach (GameObject hotbarSlot in slots)
             {
-                if (hotbarSlot.GetComponent<HotbarSlot_UI>().isEnabled && Object.Equals(hotbarSlot.GetComponent<HotbarSlot_UI>().getItem(), null))
+                if (hotbarSlot.GetComponent<HotbarSlot_UI>().isEnabled && System.Object.Equals(hotbarSlot.GetComponent<HotbarSlot_UI>().getItem(), null))
                 {
                     hotbarSlot.GetComponent<HotbarSlot_UI>().setItem(itemToStore);
                     hotbarHasSpace = true;

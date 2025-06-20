@@ -66,11 +66,12 @@ public class HeldItem : MonoBehaviour
 
     public void handleHeldItemOnlyChange(Component sender, object data) //so far for sender hotbar_UI and data (lHandItem, rHandItem)
     {
+        //Debug.Log("well, did it work?");
         if(sender is Hotbar_UI && data is Tuple<Item,Item>)
         {
             //for multiplayer, may need to check exactly which hotbar is sending
             Tuple<Item,Item> castedData = (Tuple<Item,Item>)data;
-            if ( !(UnityEngine.Object.Equals(lHandItem, castedData.Item1) && UnityEngine.Object.Equals(rHandItem, castedData.Item2) ) ) //should work even w/nulls
+            if ( !(System.Object.Equals(lHandItem, castedData.Item1) && System.Object.Equals(rHandItem, castedData.Item2) ) ) //should work even w/nulls
             {
                 //this runs only when the 'change' actually changes the handled items (this GameEvent may be called even if there isn't a change to the heldItems)
 
@@ -78,14 +79,14 @@ public class HeldItem : MonoBehaviour
                 
                 lHandItem = castedData.Item1;
                 rHandItem = castedData.Item2;
-                if (UnityEngine.Object.Equals(castedData.Item1, null)) //if the first is null they are both null
+                if (System.Object.Equals(castedData.Item1, null)) //if the first is null they are both null
                 {
                     this.Style = EquipStyle.UNARMED; //emptyEquip
                 }
                 else if(castedData.Item1.isOneHanded) //empty must be evaluated first or else nullPointerException will occur
                 {
                     //asks if both hands sent as data are the same Item or not (if so, Duelist, if not, dual wield)
-                    this.Style = UnityEngine.Object.Equals(castedData.Item1, castedData.Item2) ? EquipStyle.DUELIST : EquipStyle.DUAL_WIELD;
+                    this.Style = System.Object.Equals(castedData.Item1, castedData.Item2) ? EquipStyle.DUELIST : EquipStyle.DUAL_WIELD;
                 }
                 else // the only remaining case is that they are holding a two handed weapon
                 {
@@ -156,11 +157,13 @@ public class HeldItem : MonoBehaviour
         {
             lHandVisual = Instantiate(lHandItem.gameObject, lHandAnchor.position, lHandAnchor.rotation, lHandAnchor);
             lHandVisual.GetComponent<SpriteRenderer>().enabled = true; //generally in the hotbar Items have enabled = false;
+            lHandVisual.GetComponent<SpriteRenderer>().sortingLayerName = "Player";
         }
         else
         {
             rHandVisual = Instantiate(rHandItem.gameObject, rHandAnchor.position, rHandAnchor.rotation, rHandAnchor);
             rHandVisual.GetComponent<SpriteRenderer>().enabled = true; //generally in the hotbar Items have enabled = false;
+            rHandVisual.GetComponent<SpriteRenderer>().sortingLayerName = "Player";
         }
     }
     

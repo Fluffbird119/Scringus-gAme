@@ -5,10 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class WorldItem : MonoBehaviour
 {
-    private GameObject itemPrefab; //only stored so that when picked up, can throw the itemprefab without the collider (ALSO forcefully has spriterenderer disabled
-    public ItemData itemData; // left here for inventory verison
-    private bool playerIsNear = false;
-    private Inventory player; // left here for inventory version
+    public ItemData itemData;           // left here for inventory verison
+    private bool playerIsNear = false;  // left here for inventory version
+    private Inventory player;           // left here for inventory version
 
     //[Header("Events")]
     //[SerializeField] private GameEvent onPickUpItemAttempt;
@@ -37,14 +36,26 @@ public class WorldItem : MonoBehaviour
 
     public void setItem(ItemData itemData) { this.itemData = itemData; } //left here as inventory version
 
-    public void setItemPrefab(GameObject itemPrefab)
+    
+    public GameObject getHotbarSafeCopy() //returns a copy that has a disabled worldItem and collider (for hotbar and held item usage)
     {
-        GameObject bucketPrefab = Instantiate(itemPrefab);
-        bucketPrefab.GetComponent<SpriteRenderer>().enabled = false;
-        this.itemPrefab = bucketPrefab;
-    }
-    public GameObject getItemPrefab()
-    {
-        return this.itemPrefab;
+        GameObject objectForHotbar = Instantiate(this.gameObject);
+        objectForHotbar.name = ItemGeneration.nameFunction(this.gameObject, " (WIV)", " (HBS)"); //HBS means HotbarSafe
+
+        objectForHotbar.TryGetComponent<Collider2D>(out Collider2D collider2D);
+        {
+            collider2D.enabled = false;
+
+        }
+        objectForHotbar.TryGetComponent<WorldItem>(out WorldItem newWorldItem);
+        {
+            newWorldItem.enabled = false;
+        }
+        objectForHotbar.TryGetComponent<SpriteRenderer>(out SpriteRenderer sr);
+        {
+            sr.enabled = false;
+        }
+
+        return objectForHotbar;
     }
 }
