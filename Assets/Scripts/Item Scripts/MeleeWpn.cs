@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,11 +15,10 @@ public abstract class MeleeWpn : Weapon
 
     protected void swingAnimation(Transform weaponTransform) //the GameObject clone that is actively rendering on the player should go here
     {
-        for (int i = 0; i < numFrames; i++)
-        {
-            weaponTransform.Rotate(0, 0, -90 / numFrames);
-        }
+        Debug.Log("swing");
+        
     }
+
 
     protected void joustAnimation(GameObject weaponPrefab) //the GameObject clone that is actively rendering on the player should go here)
     {

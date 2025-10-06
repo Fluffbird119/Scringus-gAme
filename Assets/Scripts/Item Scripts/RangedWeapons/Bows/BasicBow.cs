@@ -35,7 +35,7 @@ public class BasicBow : ProjectileWpn
 
     override public void use(GameObject obj)
     {
-        this.firingAnimation(obj.transform);
+        //this.firingAnimation(obj.transform);
         Vector3 mouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z);
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(mouse);
         mousePos.z = 0;

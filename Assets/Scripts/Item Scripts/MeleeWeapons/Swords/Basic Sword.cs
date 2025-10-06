@@ -39,7 +39,7 @@ public class BasicSword : MeleeWpn
     
     override public void use(GameObject obj)
     {
-        this.swingAnimation(obj.transform);
+        worldItem.animator.SetTrigger("Attack");
     }
     public override void wpnAction()
     {

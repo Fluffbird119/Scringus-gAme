@@ -9,6 +9,7 @@ public class WorldItem : MonoBehaviour
     public Item item;
     private bool playerIsNear = false;
     private Inventory player;
+    public Animator animator;
 
     private void Update()
     {
